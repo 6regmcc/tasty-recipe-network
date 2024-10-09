@@ -19,20 +19,20 @@ class Base(DeclarativeBase):
 class User_Auth(Base):
     __tablename__ = "user_auth"
 
-    user_id: Mapped[int] = mapped_column(primary_key=True)
+    user_auth_id: Mapped[int] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(String(40), nullable=False)
     password: Mapped[str] = mapped_column(String(40), nullable=False)
-    user_details_id: Mapped[int] = mapped_column(ForeignKey("user_details.id"))
+    user_details_id: Mapped[int] = mapped_column(ForeignKey("user_details_id"))
 
 
 
 class User_Details(Base):
     __tablename__ = "user_details"
-    id: Mapped[int] = mapped_column(primary_key=True)
+    user_details_id: Mapped[int] = mapped_column(primary_key=True)
     first_name: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
     last_name: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
     verified: Mapped[bool] = mapped_column(default=False, nullable=False)
-    user_auth_id: Mapped[int] = mapped_column(ForeignKey("user_auth.user_id"))
+    user_auth_id: Mapped[int] = mapped_column(ForeignKey("user_auth.user_auth_id"))
 
 
 class Notes(Base):
