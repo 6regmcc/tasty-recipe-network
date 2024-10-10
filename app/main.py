@@ -1,11 +1,13 @@
+import uvicorn
 from fastapi import FastAPI, Depends
 from contextlib import asynccontextmanager
-
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
 from db.db_connection import get_db, db_create_all
 from models.user_models import Notes, Base
 from schemas.user_schema import Notes_Schema, Notes_Schema_response
+from authentication import user_auth_routes
 
 
 @asynccontextmanager
@@ -16,6 +18,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+app.include_router(user_auth_routes.router, prefix="/user", tags=["User Auth"])
 
 
 @app.get("/")
@@ -31,3 +34,7 @@ def create_note(note: Notes_Schema, db: Session = Depends(get_db)):
     db.add(new_note)
     db.commit()
     return new_note
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
