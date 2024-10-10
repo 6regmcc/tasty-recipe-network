@@ -25,7 +25,7 @@ class Base(object):
     __abstract__ = True
 
     def to_dict(self):
-        return dict((col, getattr(self, col)) for col in self.__table__.columns)
+        return {field.name: getattr(self, field.name) for field in self.__table__.c}
 
 
 

@@ -21,6 +21,11 @@ class Return_User_With_Pwd(Return_User):
     password: str
 
 
+class Authenticate_User(BaseModel):
+    username: str
+    password: str
+
+
 class Notes_Schema(BaseModel):
     test_note: str
 
