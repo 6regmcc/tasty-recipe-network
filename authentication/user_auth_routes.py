@@ -54,7 +54,7 @@ def create_user(create_user_data: Create_User,
     except IntegrityError as e:
         error = e
         print(e)
-        raise HTTPException(status_code=400 )
+        raise HTTPException(status_code=400, detail=e.orig)
 
 
 
