@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from models.user_models import User_Auth, User_Details
-from schemas.user_schema import Create_User, Return_User
+from schemas.user_schema import Create_User, Return_User, Return_User_With_Pwd
 
 
 def db_create_user(create_user_data: Create_User, db: Session):
@@ -24,4 +24,13 @@ def db_create_user(create_user_data: Create_User, db: Session):
 
 
 def db_get_user_by_username(username: str, db: Session):
-    return db.query(User_Auth).filter(User_Auth.username == username).first()
+    auth_user = db.query(User_Auth).filter(User_Auth.username == username).first()
+    user_details = db_get_user_details_by_id(user_auth_id=auth_user.user_id, db=db)
+    return_user = Return_User_With_Pwd(**auth_user.to_dict(), **user_details.to_dict())
+
+    return return_user
+
+
+def db_get_user_details_by_id(user_auth_id: int, db: Session):
+    user_details = db.query(User_Details).filter(User_Details.user_auth_id == user_auth_id).first()
+    return user_details

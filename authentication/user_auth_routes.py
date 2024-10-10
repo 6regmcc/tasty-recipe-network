@@ -27,7 +27,7 @@ router = APIRouter()
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 300
 
 
 class Token(BaseModel):
@@ -41,6 +41,7 @@ class TokenData(BaseModel):
 
 def authenticate_user(username: str, password: str, db: Session):
     user = db_get_user_by_username(username=username, db=db)
+    print(user)
     if not user:
         return False
     if not verify_password(password, user.password):
@@ -115,6 +116,27 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 # return current_user
 
 
-@router.get("/me")
-async def read_users_me(token: Annotated[str, Depends(oauth2_scheme)]):
-    return {"success": "success"}
+def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Session):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+        token_data = TokenData(username=username)
+    except InvalidTokenError:
+        raise credentials_exception
+    user = db_get_user_by_username(username=token_data.username, db=db)
+    if user is None:
+        raise credentials_exception
+    return user
+
+
+@router.get("/me", response_model=Return_User)
+async def read_users_me(token: Annotated[str, Depends(oauth2_scheme)], db: Annotated[Session, Depends(get_db)]):
+    user = get_current_user(token=token, db=db)
+    return user

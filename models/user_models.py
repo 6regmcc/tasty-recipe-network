@@ -20,8 +20,6 @@ class User_Auth(Base):
     password: Mapped[str] = mapped_column(String(100), nullable=False)
 
 
-
-
 class User_Details(Base):
     __tablename__ = "user_details"
     user_details_id: Mapped[int] = mapped_column(primary_key=True)
@@ -30,10 +28,9 @@ class User_Details(Base):
     verified: Mapped[bool] = mapped_column(default=False, nullable=False)
     user_auth_id: Mapped[int] = mapped_column(ForeignKey("user_auth.user_id"))
 
+
 class Notes(Base):
     __tablename__ = "notes"
     id: Mapped[int] = mapped_column(primary_key=True)
     test_note: Mapped[str] = mapped_column(String(100))
     test: Mapped[str] = mapped_column(String(100))
-
-

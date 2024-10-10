@@ -4,9 +4,10 @@ from typing import Generator
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-
 from sqlalchemy.ext.declarative import declared_attr
-from sqlalchemy.ext.declarative import declarative_base
+#from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
+
 DATABASE_URL = os.getenv("DEV_DATABASE_URL")
 
 engine = create_engine(DATABASE_URL)
@@ -28,12 +29,10 @@ class Base(object):
         return {field.name: getattr(self, field.name) for field in self.__table__.c}
 
 
-
-
 Base = declarative_base(cls=Base)
 
 
 def db_create_all():
     # Base.metadata.clear()
-    #Base.metadata.drop_all(bind=engine)
+    # Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine, checkfirst=True)
