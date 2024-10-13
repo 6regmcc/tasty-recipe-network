@@ -1,9 +1,11 @@
+import os
+
 import pytest
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, Session
 from starlette.testclient import TestClient
 from app.main import app
 from db.db_connection import get_db
-from tests.database.db_database_connection import get_test_database, db_create_all, db_drop_all
-
 
 
 
@@ -13,15 +15,26 @@ def test_client():
         yield _client
 
 
-@pytest.fixture(scope="module")
-def set_test_db():
+from db.db_connection import Base
 
-    db_create_all()
-    yield
-    #db_drop_all()
+TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL")
+
+engine = create_engine(TEST_DATABASE_URL)
+TestingSessionLocal = sessionmaker(autoflush=False, autocommit=False, bind=engine)
 
 
-def get_test_db():
-    return get_test_database()
+def override_get_db():
+    try:
+        database = TestingSessionLocal()
 
-app.dependency_overrides[get_db] = get_test_db
+        Base.metadata.create_all(bind=engine, checkfirst=True)
+        print('this ran')
+        yield database
+
+    finally:
+        database.close()
+        Base.metadata.drop_all(bind=engine)
+        print('this also ran')
+
+
+app.dependency_overrides[get_db] = override_get_db
