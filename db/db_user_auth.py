@@ -25,7 +25,11 @@ def db_create_user(create_user_data: Create_User, db: Session):
 
 def db_get_user_by_username(username: str, db: Session):
     auth_user = db.query(User_Auth).filter(User_Auth.username == username).first()
+    if auth_user is None:
+        return False
     user_details = db_get_user_details_by_id(user_auth_id=auth_user.user_id, db=db)
+    if user_details is None:
+        return False
     return_user = Return_User_With_Pwd(**auth_user.to_dict(), **user_details.to_dict())
 
     return return_user

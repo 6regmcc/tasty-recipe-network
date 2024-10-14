@@ -1,3 +1,7 @@
+import os
+
+import jwt
+
 from models.user_models import User_Auth, User_Details
 
 
@@ -74,7 +78,7 @@ def test_login_success(test_client, db_session, create_user_fixture):
     user = create_user_fixture
     assert user["user_id"]
     body = {
-        "username": "tom4@gmail.com",
+        "username": user["username"],
         "password": 'Password1'
 
     }
@@ -82,7 +86,32 @@ def test_login_success(test_client, db_session, create_user_fixture):
     response = test_client.post("user/token", data=body)
     data = response.json()
     assert "access_token" in data
+    payload = jwt.decode(data["access_token"], os.getenv("SECRET_KEY"), algorithms=["HS256"])
+    assert user["username"] == payload.get("sub")
 
 
-def test_incorrect_username_password(test_client):
-    pass
+def test_incorrect_password(test_client, create_user_fixture):
+    user = create_user_fixture
+    body = {
+        "username": user["username"],
+        "password": 'Password2'
+
+    }
+    response = test_client.post("user/token", data=body)
+    data = response.json()
+    assert response.status_code == 401
+    assert data['detail'] == "Incorrect username or password"
+
+
+def test_incorrect_username(test_client, create_user_fixture):
+    user = create_user_fixture
+    body = {
+        "username": "tom6@gmail.com",
+        "password": user["password"]
+
+    }
+
+    response = test_client.post("user/token", data=body)
+    data = response.json()
+    assert response.status_code == 401
+    assert data['detail'] == "Incorrect username or password"

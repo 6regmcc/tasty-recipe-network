@@ -41,7 +41,7 @@ class TokenData(BaseModel):
 
 def authenticate_user(username: str, password: str, db: Session):
     user = db_get_user_by_username(username=username, db=db)
-    print(user)
+
     if not user:
         return False
     if not verify_password(password, user.password):

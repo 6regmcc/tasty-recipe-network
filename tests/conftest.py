@@ -6,6 +6,7 @@ from sqlalchemy.orm import sessionmaker
 from starlette.testclient import TestClient
 
 from app.main import app
+from authentication.user_auth_routes import get_password_hash
 from db.db_connection import Base, get_db
 from models.user_models import User_Auth, User_Details
 from schemas.user_schema import Return_User
@@ -24,7 +25,6 @@ Base.metadata.create_all(bind=engine)
 
 @pytest.fixture(scope="function")
 def db_session():
-    """Create a new database session with a rollback at the end of the test."""
     connection = engine.connect()
     transaction = connection.begin()
     session = TestingSessionLocal(bind=connection)
@@ -36,8 +36,6 @@ def db_session():
 
 @pytest.fixture(scope="function")
 def test_client(db_session):
-    """Create a test client that uses the override_get_db fixture to return a session."""
-
     def override_get_db():
         try:
             yield db_session
@@ -53,7 +51,7 @@ def test_client(db_session):
 def create_user_fixture(db_session):
     new_user = User_Auth(
         username="tom4@gmail.com",
-        password="$2b$12$4vhC4dJnz36Zo.l08rVKXOKcjL3hhLgETDDFj2RuXR4UJUwvu3Oka",
+        password=get_password_hash("Password1"),
 
     )
     db_session.add(new_user)
