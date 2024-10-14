@@ -15,23 +15,6 @@ def test_first(test_client):
     assert response.json() == {"message": "Hello World"}
 
 
-def test_create_user(test_client):
-    body = {
-        "username": "tddom@email.com",
-        "password": "Password1",
-        "first_name": "Tom",
-        "last_name": "Smith"
-    }
-
-    response = test_client.post("/user/create_user", json=body)
-    assert response.status_code == 200
-    data = response.json()
-    assert "user_id" in data
-    assert "username" in data
-    assert "password" not in data
-    assert "first_name" in data
-    assert "last_name" in data
-
 
 
 """

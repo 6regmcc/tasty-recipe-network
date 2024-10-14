@@ -34,5 +34,5 @@ Base = declarative_base(cls=Base)
 
 def db_create_all():
     # Base.metadata.clear()
-    # Base.metadata.drop_all(bind=engine)
+    #Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine, checkfirst=True)
