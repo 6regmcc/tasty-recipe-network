@@ -64,7 +64,6 @@ def create_user(create_user_data: Create_User,
             raise HTTPException(status_code=400, detail=e.orig.args)
 
 
-
 @router.post("/token")
 async def login(
         form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Annotated[Session, Depends(get_db)]

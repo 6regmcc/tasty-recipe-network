@@ -70,28 +70,18 @@ def test_create_user_optional_fields(test_client):
     assert data["last_name"] is None
 
 
-def test_login_success(test_client, db_session):
-    new_user = User_Auth(
-        username="tom4@gmail.com",
-        password="Password1",
+def test_login_success(test_client, db_session, create_user_fixture):
+    user = create_user_fixture
+    assert user["user_id"]
+    body = {
+        "username": "tom4@gmail.com",
+        "password": 'Password1'
 
-    )
-    db_session.add(new_user)
-    db_session.commit()
-    db_session.refresh(new_user)
-    new_user_details = User_Details(
-        first_name="Tom",
-        last_name="Smith",
-        user_auth_id=new_user.user_id
-    )
-    db_session.add(new_user_details)
-    db_session.commit()
-    db_session.refresh(new_user_details)
-    assert "user_id" in new_user.to_dict()
-    assert "user_details_id" in new_user_details.to_dict()
-    assert "user_auth_id" in new_user_details.to_dict()
+    }
 
-
+    response = test_client.post("user/token", data=body)
+    data = response.json()
+    assert "access_token" in data
 
 
 def test_incorrect_username_password(test_client):
