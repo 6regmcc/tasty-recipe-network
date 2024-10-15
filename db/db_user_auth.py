@@ -25,6 +25,7 @@ def db_create_user(create_user_data: Create_User, db: Session):
 
 
 def db_get_user_by_username(username: str, db: Session):
+    print('this function was called')
     try:
         auth_user = db.query(User_Auth).filter(User_Auth.username == username).one()
     except sqlalchemy.exc.NoResultFound:

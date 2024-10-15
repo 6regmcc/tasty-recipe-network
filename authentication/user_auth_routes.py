@@ -28,7 +28,7 @@ router = APIRouter()
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 300
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
 
 
 class Token(BaseModel):
@@ -40,13 +40,15 @@ class TokenData(BaseModel):
     username: str | None = None
 
 
-def authenticate_user(username: str, password: str, db: Session):
+def authenticate_user(username: str, password: str, db: Session) -> Return_User_With_Pwd | bool:
     try:
         user = db_get_user_by_username(username=username, db=db)
     except sqlalchemy.exc.NoResultFound:
+        print('that')
         return False
     if not verify_password(password, user.password):
-       return False
+        print('this')
+        return False
     return user
 
 
@@ -69,15 +71,13 @@ def create_user(create_user_data: Create_User,
 async def login(
         form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Annotated[Session, Depends(get_db)]
 ) -> Token:
-
     user = authenticate_user(username=form_data.username, password=form_data.password, db=db)
     if not user:
         raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Incorrect username or password",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
@@ -94,12 +94,12 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 
-def get_user(db: Session, username: str):
+"""def get_user(db: Session, username: str):
     user_auth = db.query(User_Auth).filter(User_Auth.email == username).first()
     if not user_auth:
         raise HTTPException(status_code=404, detail="User not found")
 
-    return Return_User_With_Pwd(**user_auth.to_dict())
+    return Return_User_With_Pwd(**user_auth.to_dict())"""
 
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):

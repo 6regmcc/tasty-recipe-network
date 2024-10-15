@@ -122,20 +122,3 @@ def test_incorrect_username(test_client, create_user_fixture):
 
 def test_authenticate_user():
     pass
-
-#authenticate_user
-
-#verify_password
-
-#get_password_hash
-
-#get_user
-
-
-#create_access_token
-
-
-#get_current_user
-
-
-#get_current_user
