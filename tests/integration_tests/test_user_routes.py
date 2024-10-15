@@ -115,3 +115,27 @@ def test_incorrect_username(test_client, create_user_fixture):
     data = response.json()
     assert response.status_code == 401
     assert data['detail'] == "Incorrect username or password"
+
+
+#@router.get("/me", response_model=Return_User)
+
+
+def test_authenticate_user():
+    pass
+
+#authenticate_user
+
+#verify_password
+
+#get_password_hash
+
+#get_user
+
+
+#create_access_token
+
+
+#get_current_user
+
+
+#get_current_user

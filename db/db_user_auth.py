@@ -1,3 +1,4 @@
+import sqlalchemy
 from sqlalchemy.orm import Session
 
 from models.user_models import User_Auth, User_Details
@@ -24,9 +25,11 @@ def db_create_user(create_user_data: Create_User, db: Session):
 
 
 def db_get_user_by_username(username: str, db: Session):
-    auth_user = db.query(User_Auth).filter(User_Auth.username == username).first()
-    if auth_user is None:
-        return False
+    try:
+        auth_user = db.query(User_Auth).filter(User_Auth.username == username).one()
+    except sqlalchemy.exc.NoResultFound:
+        raise
+
     user_details = db_get_user_details_by_id(user_auth_id=auth_user.user_id, db=db)
     if user_details is None:
         return False
@@ -36,5 +39,8 @@ def db_get_user_by_username(username: str, db: Session):
 
 
 def db_get_user_details_by_id(user_auth_id: int, db: Session):
-    user_details = db.query(User_Details).filter(User_Details.user_auth_id == user_auth_id).first()
+    try:
+        user_details = db.query(User_Details).filter(User_Details.user_auth_id == user_auth_id).one()
+    except sqlalchemy.exc.NoResultFound:
+        raise
     return user_details

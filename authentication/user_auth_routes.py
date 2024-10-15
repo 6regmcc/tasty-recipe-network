@@ -3,6 +3,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Annotated
 
 import jwt
+import sqlalchemy
 from fastapi import APIRouter, HTTPException
 
 from fastapi import Depends
@@ -40,12 +41,12 @@ class TokenData(BaseModel):
 
 
 def authenticate_user(username: str, password: str, db: Session):
-    user = db_get_user_by_username(username=username, db=db)
-
-    if not user:
+    try:
+        user = db_get_user_by_username(username=username, db=db)
+    except sqlalchemy.exc.NoResultFound:
         return False
     if not verify_password(password, user.password):
-        return False
+       return False
     return user
 
 
@@ -68,13 +69,16 @@ def create_user(create_user_data: Create_User,
 async def login(
         form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Annotated[Session, Depends(get_db)]
 ) -> Token:
+
     user = authenticate_user(username=form_data.username, password=form_data.password, db=db)
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect username or password",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
@@ -107,16 +111,6 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
-
-
-# async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
-# user = fake_decode_token(token)
-# return user
-
-
-# @router.get("/me", tags=["users"] )
-# async def read_users_me(current_user: Annotated[User_Auth, Depends(get_current_user)]):
-# return current_user
 
 
 def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Session):
