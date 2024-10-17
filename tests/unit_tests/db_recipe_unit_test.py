@@ -1,3 +1,8 @@
+from unittest.mock import Mock
+
+import pytest
+import sqlalchemy
+
 from db.db_recipes import db_create_recipe_ingredients, db_create_recipe, db_create_recipe_with_ingredients
 from models.recipe_models import Recipe, Ingredient
 from schemas.recipe_schema import Create_Recipe, Return_Recipe
@@ -14,7 +19,6 @@ def test_create_ingredients(return_ingredients, create_recipe, db_session):
 
 
 def test_create_recipe(recipe_one, db_session):
-
     new_recipe = db_create_recipe(recipe_one, db_session)
     assert new_recipe
     assert isinstance(new_recipe, Recipe)
@@ -24,3 +28,14 @@ def test_create_recipe_with_ingredients(recipe_one, db_session):
     new_recipe = db_create_recipe_with_ingredients(recipe_data=recipe_one, db=db_session)
     assert new_recipe
     assert isinstance(new_recipe, Return_Recipe)
+
+
+def test_create_recipe_with_ingredients_exception(recipe_one, db_session, mocker):
+    mock_db_delete = Mock()
+    sqlalchemy.orm.Session.delete = mock_db_delete
+    mocker.patch("db.db_recipes.db_create_recipe_ingredients", side_effect=ValueError('Test exception handling'))
+
+    with pytest.raises(ValueError):
+        new_recipe = db_create_recipe_with_ingredients(recipe_data=recipe_one, db=db_session)
+        assert new_recipe is False
+        mock_db_delete.assert_called()
