@@ -9,7 +9,7 @@ class Create_Ingredient(BaseModel):
     is_metric: bool = True
 
 
-class Return_Ingredients(Create_Ingredient):
+class Return_Ingredient(Create_Ingredient):
     ingredient_id: int
     recipe_id: int
 
@@ -25,4 +25,4 @@ class Create_Recipe(BaseModel):
 
 class Return_Recipe(Create_Recipe):
     recipe_id: int
-    ingredients: list[Return_Ingredients]
+    ingredients: list[Return_Ingredient]

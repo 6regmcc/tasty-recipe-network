@@ -1,6 +1,6 @@
-from db.db_recipes import db_create_recipe_ingredients, db_create_recipe
+from db.db_recipes import db_create_recipe_ingredients, db_create_recipe, db_create_recipe_with_ingredients
 from models.recipe_models import Recipe, Ingredient
-from schemas.recipe_schema import Create_Recipe
+from schemas.recipe_schema import Create_Recipe, Return_Recipe
 
 
 def test_create_ingredients(return_ingredients, create_recipe, db_session):
@@ -19,3 +19,8 @@ def test_create_recipe(recipe_one, db_session):
     assert new_recipe
     assert isinstance(new_recipe, Recipe)
 
+
+def test_create_recipe_with_ingredients(recipe_one, db_session):
+    new_recipe = db_create_recipe_with_ingredients(recipe_data=recipe_one, db=db_session)
+    assert new_recipe
+    assert isinstance(new_recipe, Return_Recipe)
