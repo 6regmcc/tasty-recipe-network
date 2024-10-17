@@ -4,7 +4,7 @@ import pytest
 import sqlalchemy
 
 from db.db_recipes import db_create_recipe_ingredients, db_create_recipe, db_create_recipe_with_ingredients, \
-    delete_recipe
+    delete_recipe, delete_ingredient
 from models.recipe_models import Recipe, Ingredient
 from schemas.recipe_schema import Create_Recipe, Return_Recipe
 
@@ -55,3 +55,10 @@ def test_delete_recipe(create_recipe_with_ingredients, db_session):
     assert found_ingredient is None
 
 
+def test_delete_ingredient(create_recipe_with_ingredients, db_session):
+    new_recipe = create_recipe_with_ingredients
+    example_ingredient_id = new_recipe.ingredients[0].ingredient_id
+    assert db_session.query(Ingredient).filter(Ingredient.ingredient_id == example_ingredient_id)
+    delete_ingredient(example_ingredient_id, db_session)
+    with pytest.raises(sqlalchemy.exc.NoResultFound):
+        db_session.query(Ingredient).filter(Ingredient.ingredient_id == example_ingredient_id).one()

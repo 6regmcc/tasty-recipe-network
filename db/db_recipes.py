@@ -24,8 +24,10 @@ def add_ingredient_to_recipe():
     pass
 
 
-def delete_ingredient():
-    pass
+def delete_ingredient(ingredient_id: int, db: Session):
+    ingredient_to_delete = db.query(Ingredient).filter(Ingredient.ingredient_id == ingredient_id).delete()
+    db.commit()
+    return ingredient_to_delete
 
 
 def delete_recipe(recipe_id: int, db: Session):
