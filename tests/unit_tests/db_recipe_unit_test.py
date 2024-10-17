@@ -3,7 +3,8 @@ from unittest.mock import Mock
 import pytest
 import sqlalchemy
 
-from db.db_recipes import db_create_recipe_ingredients, db_create_recipe, db_create_recipe_with_ingredients
+from db.db_recipes import db_create_recipe_ingredients, db_create_recipe, db_create_recipe_with_ingredients, \
+    delete_recipe
 from models.recipe_models import Recipe, Ingredient
 from schemas.recipe_schema import Create_Recipe, Return_Recipe
 
@@ -39,3 +40,18 @@ def test_create_recipe_with_ingredients_exception(recipe_one, db_session, mocker
         new_recipe = db_create_recipe_with_ingredients(recipe_data=recipe_one, db=db_session)
         assert new_recipe is False
         mock_db_delete.assert_called()
+
+
+def test_delete_recipe(create_recipe_with_ingredients, db_session):
+    recipe_to_delete = create_recipe_with_ingredients
+    example_recipe_id = recipe_to_delete.recipe_id
+    example_ingredient_id = recipe_to_delete.ingredients[0].ingredient_id
+    assert db_session.query(Recipe).filter(Recipe.recipe_id == example_recipe_id).one()
+    assert db_session.query(Ingredient).filter(Ingredient.ingredient_id == example_ingredient_id).one()
+    deleted_recipe = delete_recipe(recipe_id=recipe_to_delete.recipe_id, db=db_session)
+    found_recipe = db_session.query(Recipe).filter(Recipe.recipe_id == example_recipe_id).first()
+    assert found_recipe is None
+    found_ingredient = db_session.query(Ingredient).filter(Ingredient.ingredient_id == example_ingredient_id).first()
+    assert found_ingredient is None
+
+

@@ -30,4 +30,4 @@ class Ingredient(Base):
     notes: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     unit: Mapped[Optional[str]] = mapped_column(default=None, nullable=True)
     is_metric: Mapped[bool] = mapped_column()
-    recipe_id: Mapped[int] = mapped_column(ForeignKey("recipe.recipe_id"))
+    recipe_id: Mapped[int] = mapped_column(ForeignKey("recipe.recipe_id", ondelete="CASCADE"))

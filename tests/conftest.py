@@ -12,6 +12,7 @@ from models.recipe_models import Recipe
 from models.user_models import User_Auth, User_Details
 from schemas.recipe_schema import Create_Ingredient, Create_Recipe
 from schemas.user_schema import Return_User
+from db.db_recipes import db_create_recipe_with_ingredients
 
 TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL")
 
@@ -100,15 +101,20 @@ Return meatballs to the oven, and bake until sauce is hot and cheese is melted, 
 
 
 @pytest.fixture(scope="function")
-def return_ingredients(create_recipe):
+def create_recipe_with_ingredients(recipe_one, db_session):
+    new_recipe = recipe_one
+    created_recipe = db_create_recipe_with_ingredients(recipe_data=new_recipe, db=db_session)
+    return created_recipe
 
+
+@pytest.fixture(scope="function")
+def return_ingredients(create_recipe):
     ingredients = [
         {
             "amount": 4,
             "ingredient_name": "large slices stale white bread",
             "notes": "crusts removed",
             "is_metric": False,
-
 
         },
         {
@@ -117,14 +123,12 @@ def return_ingredients(create_recipe):
             "ingredient_name": "milk",
             "is_metric": False,
 
-
         },
         {
             "amount": 1,
             "unit": "lb",
             "ingredient_name": "ground beef",
             "is_metric": False,
-
 
         },
         {
@@ -133,14 +137,12 @@ def return_ingredients(create_recipe):
             "ingredient_name": "ground pork",
             "is_metric": False,
 
-
         },
         {
             "amount": 2.5,
             "unit": "teaspoon",
             "ingredient_name": "kosher salt",
             "is_metric": False,
-
 
         },
         {
@@ -150,14 +152,12 @@ def return_ingredients(create_recipe):
             "notes": "freshly ground",
             "is_metric": False,
 
-
         },
         {
             "amount": 0.25,
             "unit": "teaspoon",
             "ingredient_name": "dried oregano",
             "is_metric": False,
-
 
         },
         {
@@ -166,14 +166,12 @@ def return_ingredients(create_recipe):
             "ingredient_name": " onion powder",
             "is_metric": False,
 
-
         },
         {
             "amount": 1,
             "unit": "teaspoon",
             "ingredient_name": "garlic powder",
             "is_metric": False,
-
 
         },
         {
@@ -182,14 +180,12 @@ def return_ingredients(create_recipe):
             "ingredient_name": "cayenne pepper",
             "is_metric": False,
 
-
         },
         {
             "amount": 1,
             "unit": "tablespoon",
             "ingredient_name": "olive oil",
             "is_metric": False,
-
 
         },
         {
@@ -199,7 +195,6 @@ def return_ingredients(create_recipe):
             "notes": "freshly grated",
             "is_metric": False,
 
-
         },
         {
             "amount": 0.333,
@@ -208,7 +203,6 @@ def return_ingredients(create_recipe):
             "notes": "chopped fresh (optional)",
             "is_metric": False,
 
-
         },
         {
             "amount": 1,
@@ -216,14 +210,12 @@ def return_ingredients(create_recipe):
             "notes": "chopped fresh (optional)",
             "is_metric": False,
 
-
         },
         {
             "amount": 2,
             "ingredient_name": "large eggs",
             "notes": "lightly beaten",
             "is_metric": False,
-
 
         }
 
@@ -386,4 +378,3 @@ Remove thighs from pan, and turn heat to high. Boil for a few minutes, or until 
 Reduce heat to low and add butter and tarragon. Stir until butter disappears. Add chicken back to the pan, and baste with sauce for a few minutes before serving. """
     )
     return new_recipe
-

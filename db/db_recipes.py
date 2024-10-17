@@ -4,6 +4,37 @@ from models.recipe_models import Recipe, Ingredient
 from schemas.recipe_schema import Create_Recipe, Return_Recipe, Create_Ingredient, Return_Ingredient
 
 
+def get_recipe_with_recipe_id():
+    pass
+
+
+def get_recipe_with_ingredient_id():
+    pass
+
+
+def db_edit_recipe():
+    pass
+
+
+def db_edit_ingredient():
+    pass
+
+
+def add_ingredient_to_recipe():
+    pass
+
+
+def delete_ingredient():
+    pass
+
+
+def delete_recipe(recipe_id: int, db: Session):
+    recipe_to_delete = db.query(Recipe).filter(Recipe.recipe_id == recipe_id).delete()
+
+    db.commit()
+    return recipe_to_delete
+
+
 def db_create_recipe(recipe_data: Create_Recipe, db: Session):
     new_recipe = Recipe(**recipe_data.model_dump(exclude={"ingredients"}))
     db.add(new_recipe)
