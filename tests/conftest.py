@@ -10,7 +10,7 @@ from authentication.user_auth_routes import get_password_hash
 from db.db_connection import Base, get_db
 from models.recipe_models import Recipe
 from models.user_models import User_Auth, User_Details
-from schemas.recipe_schema import Create_Ingredient
+from schemas.recipe_schema import Create_Ingredient, Create_Recipe
 from schemas.user_schema import Return_User
 
 TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL")
@@ -228,10 +228,162 @@ def return_ingredients(create_recipe):
         }
 
     ]
-    ingredients_to_add: list[Create_Ingredient] = []
-    for ingredient in ingredients:
-        ingredients_to_add.append(Create_Ingredient(**ingredient))
+    ingredients_to_add: list[Create_Ingredient] = [Create_Ingredient(**ingredient) for ingredient in ingredients]
+
     return ingredients_to_add
 
 
+@pytest.fixture(scope="function")
+def recipe_one(create_user_fixture):
+    ingredients = [
+        {
+            "amount": 2,
+            "unit": "teaspoon",
+            "ingredient_name": "kosher salt",
+            "notes": "plus more to taste",
+            "is_metric": False,
+
+        },
+        {
+            "amount": 0.5,
+            "unit": "teaspoon",
+            "ingredient_name": "black pepper",
+            "notes": "freshly ground",
+            "is_metric": False,
+
+        },
+        {
+            "amount": 1,
+            "unit": "teaspoon",
+            "ingredient_name": "black pepper",
+            "notes": "freshly ground",
+            "is_metric": False,
+
+        },
+        {
+            "amount": 6,
+
+            "ingredient_name": "large chicken thighs",
+            "notes": "bone-in, skin-on",
+            "is_metric": False,
+
+        },
+        {
+            "amount": 1,
+            "unit": "teaspoon",
+            "ingredient_name": "black pepper",
+            "notes": "freshly ground",
+            "is_metric": False,
+
+        },
+        {
+            "amount": 1,
+            "unit": "tablespoon",
+            "ingredient_name": "vegetable oil",
+
+            "is_metric": False,
+
+        },
+        {
+            "amount": 0.5,
+            "unit": "cup",
+            "ingredient_name": "shallots",
+            "notes": "diced",
+            "is_metric": False,
+
+        },
+        {
+            "amount": 3,
+
+            "ingredient_name": "garlic cloves",
+            "notes": "sliced",
+            "is_metric": False,
+
+        },
+        {
+            "amount": 1,
+            "unit": "tablespoon",
+            "ingredient_name": "tomato paste",
+
+            "is_metric": False,
+
+        },
+        {
+            "amount": 0.5,
+            "unit": "cup",
+            "ingredient_name": "wine vinegar",
+
+            "is_metric": False,
+
+        },
+        {
+            "amount": 1,
+            "unit": "cup",
+            "ingredient_name": "dry white wine",
+
+            "is_metric": False,
+
+        },
+        {
+            "amount": 1,
+            "unit": "cup",
+            "ingredient_name": "chicken broth",
+
+            "is_metric": False,
+
+        },
+        {
+            "amount": 0.25,
+            "unit": "cup",
+            "ingredient_name": "heavy cream",
+            "notes": "freshly ground",
+            "is_metric": False,
+
+        },
+        {
+            "amount": 1,
+            "unit": "tablespoon",
+            "ingredient_name": "butter",
+            "notes": "cold unsalted",
+            "is_metric": False,
+
+        },
+        {
+            "amount": 1,
+            "unit": "tablespoon",
+            "ingredient_name": "fresh tarragon",
+            "notes": "freshly chopped",
+            "is_metric": False,
+
+        }
+    ]
+    ingredients_to_add = [Create_Ingredient(**ingredient) for ingredient in ingredients]
+    new_user = create_user_fixture
+    new_recipe = Create_Recipe(
+        title="Poulet au Vinaigre (Chicken with Vinegar)",
+        created_by=new_user["user_id"],
+        is_vegan=False,
+        is_vegetarian=False,
+        ingredients=ingredients_to_add,
+        body="""
+
+Preheat the oven to 325 degrees F (165 degrees C).
+
+Mix salt and black pepper together, and season chicken first on the meat side. Turn chicken skin side up, pat dry, and season with the rest of the mixture.
+
+Heat oil in an ovenproof pan over high heat. Place thighs in, skin side down, and sear until well browned, without disturbing, about 5 minutes. Turn and sear meat side for 2 minutes. Remove to plate and turn off heat.
+
+Drain or use a paper towel to remove excess fat in the pan, leaving 1 to 2 tablespoons.
+
+Turn heat to medium, add shallots and a pinch of salt, and sauté for a few minutes, just until shallots turn translucent. Add garlic and tomato paste and cook, stirring, for another minute.
+
+Add vinegar and cook, stirring and scraping up browned bits from the bottom of the pan. Add wine and broth, raise heat to high, and bring to a simmer. Add chicken back in, skin side up, and turn off heat. 
+
+Bake in the preheated oven until meat is fork tender, 40 to 45 minutes. An instant read thermometer inserted near the center should read about 195 degrees F (90 degrees C).
+
+Remove thighs from pan, and turn heat to high. Boil for a few minutes, or until volume is reduced by half. Add cream and cook until sauce starts to thicken slightly, a few minutes more. 
+
+Reduce heat to low and add butter and tarragon. Stir until butter disappears. Add chicken back to the pan, and baste with sauce for a few minutes before serving. """
+    )
+    return new_recipe
 

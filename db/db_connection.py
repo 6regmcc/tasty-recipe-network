@@ -35,7 +35,7 @@ Base = declarative_base(cls=Base)
 if TYPE_CHECKING:
     from dataclasses import dataclass as dataclass_sql
 else:
-    def dataclass_sql(cls):
+    def dataclass_sql(cls: object) -> object:
         return cls
 
 
