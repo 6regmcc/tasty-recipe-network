@@ -1,15 +1,25 @@
+from typing import Sequence
+
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from models.recipe_models import Recipe, Ingredient
 from schemas.recipe_schema import Create_Recipe, Return_Recipe, Create_Ingredient, Return_Ingredient
 
 
-def get_recipe():
-    pass
+def get_recipe(recipe_id: int, db: Session) -> Recipe:
+    found_recipe = db.query(Recipe).filter(Recipe.recipe_id == recipe_id).one()
+    return found_recipe
 
 
-def get_ingredients():
-    pass
+def get_ingredient(ingredient_id: int, db: Session) -> Ingredient:
+    found_ingredient = db.query(Ingredient).filter(Ingredient.ingredient_id == ingredient_id).one()
+    return found_ingredient
+
+
+def get_ingredients(recipe_id: int, db: Session) -> Sequence[Ingredient]:
+    found_ingredients: Sequence[Ingredient] = db.scalars(select(Ingredient).where(Ingredient.recipe_id == recipe_id)).all()
+    return found_ingredients
 
 
 def get_recipe_with_ingredients():

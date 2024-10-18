@@ -4,7 +4,7 @@ import pytest
 import sqlalchemy
 
 from db.db_recipes import db_create_recipe_ingredients, db_create_recipe, db_create_recipe_with_ingredients, \
-    delete_recipe, delete_ingredient, get_recipe_id_from_ingredient_id
+    delete_recipe, delete_ingredient, get_recipe_id_from_ingredient_id, get_ingredients
 from models.recipe_models import Recipe, Ingredient
 from schemas.recipe_schema import Create_Recipe, Return_Recipe
 
@@ -80,3 +80,8 @@ def test_get_recipe_id_from_ingredient_id_failure(db_session):
         get_recipe_id_from_ingredient_id(ingredient_id=example_ingredient_id, db=db_session)
 
 
+def test_get_ingredients(create_recipe_with_ingredients, db_session):
+    recipe_id = create_recipe_with_ingredients.recipe_id
+    found_ingredients = get_ingredients(recipe_id, db_session)
+    for ingredient in found_ingredients:
+        assert ingredient.recipe_id == recipe_id
