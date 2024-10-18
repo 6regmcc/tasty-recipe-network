@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 
 import pytest
 from sqlalchemy import create_engine
@@ -6,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 from starlette.testclient import TestClient
 
 from app.main import app
-from authentication.user_auth_routes import get_password_hash
+from authentication.user_auth_routes import get_password_hash, oauth2_scheme, create_access_token
 from db.db_connection import Base, get_db
 from models.recipe_models import Recipe
 from models.user_models import User_Auth, User_Details
@@ -15,7 +16,7 @@ from schemas.user_schema import Return_User
 from db.db_recipes import db_create_recipe_with_ingredients
 
 TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL")
-
+ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
 engine = create_engine(TEST_DATABASE_URL)
 
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -46,6 +47,9 @@ def test_client(db_session):
             db_session.close()
 
     app.dependency_overrides[get_db] = override_get_db
+
+
+
     with TestClient(app) as test_client:
         yield test_client
 
@@ -70,6 +74,21 @@ def create_user_fixture(db_session):
     db_session.refresh(new_user_details)
 
     return {**new_user.to_dict(), **new_user_details.to_dict()}
+
+
+@pytest.fixture(scope="function")
+def authorised_user(create_user_fixture, test_client):
+    new_user = create_user_fixture
+    body = {
+        "username": new_user["username"],
+        "password": 'Password1'
+
+    }
+    response = test_client.post("user/token", data=body)
+    data = response.json()
+
+    token = data["access_token"]
+    return token
 
 
 @pytest.fixture(scope="function")
@@ -351,7 +370,7 @@ def recipe_one():
         }
     ]
     ingredients_to_add = [Create_Ingredient(**ingredient) for ingredient in ingredients]
-    new_user = create_user_fixture
+
     new_recipe = Create_Recipe(
         title="Poulet au Vinaigre (Chicken with Vinegar)",
         is_vegan=False,

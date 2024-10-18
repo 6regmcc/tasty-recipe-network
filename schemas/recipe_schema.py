@@ -19,7 +19,6 @@ class Create_Recipe(BaseModel):
     is_vegan: bool
     is_vegetarian: bool
     body: str
-
     ingredients: list[Create_Ingredient]
 
 class Update_Recipe(BaseModel):

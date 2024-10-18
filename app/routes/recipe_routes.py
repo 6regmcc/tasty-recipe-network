@@ -18,6 +18,8 @@ recipe_router = APIRouter(
 
 @recipe_router.post("/create_recipe")
 def create_recipe(recipe_data: Create_Recipe, db: Annotated[Session, Depends(get_db)], token: Annotated[str, Depends(oauth2_scheme)]):
+    print(token)
+    #username = request.user
     user_id = get_current_user(token=token, db=db).user_id
     new_recipe = db_create_recipe_with_ingredients(recipe_data=recipe_data, user_id=user_id, db=db)
     return new_recipe
