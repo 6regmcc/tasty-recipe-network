@@ -1,5 +1,6 @@
 from typing import Sequence
 
+import sqlalchemy
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -19,6 +20,8 @@ def get_ingredient(ingredient_id: int, db: Session) -> Ingredient:
 
 def get_ingredients(recipe_id: int, db: Session) -> Sequence[Ingredient]:
     found_ingredients: Sequence[Ingredient] = db.scalars(select(Ingredient).where(Ingredient.recipe_id == recipe_id)).all()
+    if not found_ingredients:
+        raise sqlalchemy.exc.NoResultFound
     return found_ingredients
 
 

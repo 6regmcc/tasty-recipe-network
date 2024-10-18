@@ -65,7 +65,6 @@ def test_delete_ingredient(create_recipe_with_ingredients, db_session):
         db_session.query(Ingredient).filter(Ingredient.ingredient_id == example_ingredient_id).one()
 
 
-
 def test_get_recipe_id_from_ingredient_id_success(create_recipe_with_ingredients, db_session):
     new_recipe = create_recipe_with_ingredients
     example_ingredient_id = new_recipe.ingredients[0].ingredient_id
@@ -85,3 +84,10 @@ def test_get_ingredients(create_recipe_with_ingredients, db_session):
     found_ingredients = get_ingredients(recipe_id, db_session)
     for ingredient in found_ingredients:
         assert ingredient.recipe_id == recipe_id
+
+
+def test_get_ingredients_failure(db_session):
+    recipe_id = 999999999999999999
+    with pytest.raises(sqlalchemy.exc.NoResultFound):
+        found_ingredients = get_ingredients(recipe_id, db_session)
+
