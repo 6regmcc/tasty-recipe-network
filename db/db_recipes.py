@@ -4,12 +4,21 @@ from models.recipe_models import Recipe, Ingredient
 from schemas.recipe_schema import Create_Recipe, Return_Recipe, Create_Ingredient, Return_Ingredient
 
 
-def get_recipe_with_recipe_id():
+def get_recipe():
     pass
 
 
-def get_recipe_with_ingredient_id():
+def get_ingredients():
     pass
+
+
+def get_recipe_with_ingredients():
+    pass
+
+
+def get_recipe_id_from_ingredient_id(ingredient_id: int, db: Session) -> int:
+    found_ingredient = db.query(Ingredient).filter(Ingredient.ingredient_id == ingredient_id).one()
+    return found_ingredient.recipe_id
 
 
 def db_edit_recipe():
