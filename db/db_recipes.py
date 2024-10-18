@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from models.recipe_models import Recipe, Ingredient
-from schemas.recipe_schema import Create_Recipe, Return_Recipe, Create_Ingredient, Return_Ingredient
+from schemas.recipe_schema import Create_Recipe, Return_Recipe, Create_Ingredient, Return_Ingredient, Update_Recipe
 
 
 def db_get_recipe(recipe_id: int, db: Session) -> Recipe:
@@ -53,12 +53,21 @@ def db_get_recipe_id_from_ingredient_id(ingredient_id: int, db: Session) -> int:
     return found_ingredient.recipe_id
 
 
-def db_edit_recipe():
-    pass
+def db_edit_recipe(recipe: Update_Recipe, recipe_id: int, db: Session):
+    recipe_to_update = db.get(Recipe, recipe_id)
+    if not recipe_to_update:
+        raise sqlalchemy.exc.NoResultFound
+    for key, value in recipe:
+        setattr(recipe_to_update, key, value)
+    db.commit()
+    return recipe_to_update
 
 
 def db_edit_ingredient(ingredient: Create_Ingredient, ingredient_id: int, db: Session) -> Ingredient:
     ingredient_to_update = db.get(Ingredient, ingredient_id)
+    if not ingredient_to_update:
+        raise sqlalchemy.exc.NoResultFound
+
     for key, value in ingredient:
         setattr(ingredient_to_update, key, value)
     db.commit()
