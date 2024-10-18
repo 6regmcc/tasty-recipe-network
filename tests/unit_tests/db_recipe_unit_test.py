@@ -4,10 +4,11 @@ import pytest
 import sqlalchemy
 
 from db.db_recipes import db_create_recipe_ingredients, db_create_recipe, db_create_recipe_with_ingredients, \
-    delete_recipe, delete_ingredient, get_recipe_id_from_ingredient_id, get_ingredients, db_get_recipe, \
-    db_get_ingredient
+    delete_recipe, delete_ingredient, db_get_ingredients, db_get_recipe, \
+    db_get_ingredient, db_get_recipe_with_ingredients, add_ingredient_to_recipe, db_edit_ingredient, \
+    db_get_recipe_id_from_ingredient_id
 from models.recipe_models import Recipe, Ingredient
-from schemas.recipe_schema import Create_Recipe, Return_Recipe
+from schemas.recipe_schema import Create_Recipe, Return_Recipe, Create_Ingredient
 
 
 def test_create_ingredients(return_ingredients, create_recipe, db_session):
@@ -69,7 +70,7 @@ def test_delete_ingredient(create_recipe_with_ingredients, db_session):
 def test_get_recipe_id_from_ingredient_id_success(create_recipe_with_ingredients, db_session):
     new_recipe = create_recipe_with_ingredients
     example_ingredient_id = new_recipe.ingredients[0].ingredient_id
-    found_recipie_id = get_recipe_id_from_ingredient_id(ingredient_id=example_ingredient_id, db=db_session)
+    found_recipie_id = db_get_recipe_id_from_ingredient_id(ingredient_id=example_ingredient_id, db=db_session)
 
     assert found_recipie_id == new_recipe.recipe_id
 
@@ -77,12 +78,12 @@ def test_get_recipe_id_from_ingredient_id_success(create_recipe_with_ingredients
 def test_get_recipe_id_from_ingredient_id_failure(db_session):
     example_ingredient_id = 1
     with pytest.raises(sqlalchemy.exc.NoResultFound):
-        get_recipe_id_from_ingredient_id(ingredient_id=example_ingredient_id, db=db_session)
+        db_get_recipe_id_from_ingredient_id(ingredient_id=example_ingredient_id, db=db_session)
 
 
 def test_get_ingredients(create_recipe_with_ingredients, db_session):
     recipe_id = create_recipe_with_ingredients.recipe_id
-    found_ingredients = get_ingredients(recipe_id, db_session)
+    found_ingredients = db_get_ingredients(recipe_id, db_session)
     for ingredient in found_ingredients:
         assert ingredient.recipe_id == recipe_id
 
@@ -90,7 +91,7 @@ def test_get_ingredients(create_recipe_with_ingredients, db_session):
 def test_get_ingredients_failure(db_session):
     recipe_id = 999999999999999999
     with pytest.raises(sqlalchemy.exc.NoResultFound):
-        found_ingredients = get_ingredients(recipe_id, db_session)
+        found_ingredients = db_get_ingredients(recipe_id, db_session)
 
 
 def test_get_recipe(create_recipe_with_ingredients, db_session):
@@ -116,3 +117,62 @@ def test_get_ingredient_not_found(db_session):
     ingredient_id = 9999999999999
     with pytest.raises(sqlalchemy.exc.NoResultFound):
         found_ingredient = db_get_ingredient(ingredient_id=ingredient_id, db=db_session)
+
+
+def test_get_recipe_with_ingredients(create_recipe_with_ingredients, db_session):
+    new_recipe = create_recipe_with_ingredients
+    recipe_id = new_recipe.recipe_id
+    found_recipe = db_get_recipe_with_ingredients(recipe_id=recipe_id, db=db_session)
+    assert isinstance(found_recipe, Return_Recipe)
+    assert found_recipe.recipe_id == recipe_id
+    assert len(found_recipe.ingredients) == len(new_recipe.ingredients)
+
+
+def test_get_recipe_with_ingredients_not_found(db_session):
+    recipe_id = 9999999999
+    with pytest.raises(sqlalchemy.exc.NoResultFound):
+        found_recipe = db_get_recipe_with_ingredients(recipe_id=recipe_id, db=db_session)
+
+
+def test_add_ingredient_to_recipe(create_recipe_with_ingredients, db_session):
+    recipe_id = create_recipe_with_ingredients.recipe_id
+    new_ingredient = Create_Ingredient(
+        amount=1,
+        unit="teaspoon",
+        ingredient_name="paprika",
+        is_metric=False,
+    )
+
+    added_ingredient = add_ingredient_to_recipe(new_ingredient=new_ingredient, recipe_id=recipe_id, db=db_session)
+    assert added_ingredient.recipe_id == recipe_id
+    assert isinstance(added_ingredient, Ingredient)
+
+
+def test_add_ingredient_to_recipe_failure(db_session):
+    recipe_id = 999999999
+    new_ingredient = Create_Ingredient(
+        amount=1,
+        unit="teaspoon",
+        ingredient_name="paprika",
+        is_metric=False,
+    )
+    with pytest.raises(sqlalchemy.exc.IntegrityError):
+        added_ingredient = add_ingredient_to_recipe(new_ingredient=new_ingredient, recipe_id=recipe_id, db=db_session)
+
+
+def test_edit_ingredient(create_recipe_with_ingredients, db_session):
+    ingredient_to_update = create_recipe_with_ingredients
+    ingredient_id = ingredient_to_update.ingredients[0].ingredient_id
+    ingredient_update_data = Create_Ingredient(
+        amount=999,
+        unit="lb",
+        ingredient_name="paprika",
+        is_metric=True,
+    )
+    updated_ingredient = db_edit_ingredient(ingredient=ingredient_update_data, ingredient_id=ingredient_id, db=db_session)
+    assert isinstance(updated_ingredient, Ingredient)
+    assert updated_ingredient.ingredient_id == ingredient_id
+    assert updated_ingredient.amount == ingredient_update_data.amount
+    assert updated_ingredient.unit == ingredient_update_data.unit
+    assert updated_ingredient.ingredient_name == ingredient_update_data.ingredient_name
+    assert updated_ingredient.is_metric == ingredient_update_data.is_metric

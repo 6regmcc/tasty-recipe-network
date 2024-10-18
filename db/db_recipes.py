@@ -22,18 +22,33 @@ def db_get_ingredient(ingredient_id: int, db: Session) -> Ingredient:
     return found_ingredient
 
 
-def get_ingredients(recipe_id: int, db: Session) -> Sequence[Ingredient]:
-    found_ingredients: Sequence[Ingredient] = db.scalars(select(Ingredient).where(Ingredient.recipe_id == recipe_id)).all()
+def db_get_ingredients(recipe_id: int, db: Session) -> Sequence[Ingredient]:
+    found_ingredients: Sequence[Ingredient] = db.scalars(
+        select(Ingredient).where(Ingredient.recipe_id == recipe_id)).all()
     if not found_ingredients:
         raise sqlalchemy.exc.NoResultFound
     return found_ingredients
 
 
-def get_recipe_with_ingredients():
-    pass
+def db_get_recipe_with_ingredients(recipe_id: int, db: Session) -> Return_Recipe:
+    found_recipe = None
+    found_ingredients = None
+    try:
+        found_recipe = db_get_recipe(recipe_id=recipe_id, db=db)
+    except Exception as e:
+        raise e
+    try:
+        found_ingredients = db_get_ingredients(recipe_id=recipe_id, db=db)
+    except Exception as e:
+        raise e
+
+    recipe_to_return = Return_Recipe(**found_recipe.to_dict(),
+                                     ingredients=[Return_Ingredient(**ingredient.to_dict()) for ingredient in
+                                                  found_ingredients])
+    return recipe_to_return
 
 
-def get_recipe_id_from_ingredient_id(ingredient_id: int, db: Session) -> int:
+def db_get_recipe_id_from_ingredient_id(ingredient_id: int, db: Session) -> int:
     found_ingredient = db.query(Ingredient).filter(Ingredient.ingredient_id == ingredient_id).one()
     return found_ingredient.recipe_id
 
@@ -42,12 +57,24 @@ def db_edit_recipe():
     pass
 
 
-def db_edit_ingredient():
-    pass
+def db_edit_ingredient(ingredient: Create_Ingredient, ingredient_id: int, db: Session) -> Ingredient:
+    ingredient_to_update = db.get(Ingredient, ingredient_id)
+    for key, value in ingredient:
+        setattr(ingredient_to_update, key, value)
+    db.commit()
+    return ingredient_to_update
 
 
-def add_ingredient_to_recipe():
-    pass
+def add_ingredient_to_recipe(new_ingredient: Create_Ingredient, recipe_id: int, db: Session) -> Ingredient:
+    ingredient_to_add = Ingredient(**new_ingredient.model_dump(), recipe_id=recipe_id)
+    try:
+        db.add(ingredient_to_add)
+    except sqlalchemy.exc.IntegrityError as e:
+        raise e
+
+    db.commit()
+    db.refresh(ingredient_to_add)
+    return ingredient_to_add
 
 
 def delete_ingredient(ingredient_id: int, db: Session):
