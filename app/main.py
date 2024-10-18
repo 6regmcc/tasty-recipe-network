@@ -8,7 +8,7 @@ from db.db_connection import get_db, db_create_all
 from models.user_models import Notes, Base
 from schemas.user_schema import Notes_Schema, Notes_Schema_response
 from authentication import user_auth_routes
-
+from app.routes.recipe_routes import recipe_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -19,6 +19,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(user_auth_routes.router, prefix="/user", tags=["User Auth"])
+app.include_router(recipe_router)
 
 
 @app.get("/")

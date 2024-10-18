@@ -99,8 +99,8 @@ def delete_recipe(recipe_id: int, db: Session):
     return recipe_to_delete
 
 
-def db_create_recipe(recipe_data: Create_Recipe, db: Session):
-    new_recipe = Recipe(**recipe_data.model_dump(exclude={"ingredients"}))
+def db_create_recipe(recipe_data: Create_Recipe, user_id: int,  db: Session):
+    new_recipe = Recipe(**recipe_data.model_dump(exclude={"ingredients"}),created_by=user_id)
     db.add(new_recipe)
     db.commit()
     db.refresh(new_recipe)
@@ -119,11 +119,11 @@ def db_create_recipe_ingredients(ingredients: list[Create_Ingredient], recipe_id
     return add_ingredients
 
 
-def db_create_recipe_with_ingredients(recipe_data: Create_Recipe, db: Session):
+def db_create_recipe_with_ingredients(recipe_data: Create_Recipe, user_id: int, db: Session):
     new_recipe = None
     new_ingredients = None
     try:
-        new_recipe = db_create_recipe(recipe_data=recipe_data, db=db)
+        new_recipe = db_create_recipe(recipe_data=recipe_data, user_id=user_id, db=db)
     except Exception as e:
         raise e
 

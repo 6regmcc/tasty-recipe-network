@@ -16,10 +16,10 @@ class Return_Ingredient(Create_Ingredient):
 
 class Create_Recipe(BaseModel):
     title: str  # add 60 char limit
-    created_by: int
     is_vegan: bool
     is_vegetarian: bool
     body: str
+
     ingredients: list[Create_Ingredient]
 
 class Update_Recipe(BaseModel):
@@ -32,3 +32,4 @@ class Update_Recipe(BaseModel):
 class Return_Recipe(Create_Recipe):
     recipe_id: int
     ingredients: list[Return_Ingredient]
+    created_by: int

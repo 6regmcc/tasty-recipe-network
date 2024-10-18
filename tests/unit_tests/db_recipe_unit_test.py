@@ -21,25 +21,31 @@ def test_create_ingredients(return_ingredients, create_recipe, db_session):
     assert isinstance(added_ingredients[0], Ingredient)
 
 
-def test_create_recipe(recipe_one, db_session):
-    new_recipe = db_create_recipe(recipe_one, db_session)
+def test_create_recipe(recipe_one, create_user_fixture, db_session):
+    new_recipe = recipe_one
+    user_id = create_user_fixture["user_id"]
+    new_recipe = db_create_recipe(new_recipe, user_id, db_session)
     assert new_recipe
     assert isinstance(new_recipe, Recipe)
 
 
-def test_create_recipe_with_ingredients(recipe_one, db_session):
-    new_recipe = db_create_recipe_with_ingredients(recipe_data=recipe_one, db=db_session)
-    assert new_recipe
-    assert isinstance(new_recipe, Return_Recipe)
+def test_create_recipe_with_ingredients(recipe_one,create_user_fixture, db_session):
+    new_recipe = recipe_one
+    user_id = create_user_fixture["user_id"]
+    created_recipe = db_create_recipe_with_ingredients(recipe_data=new_recipe, user_id=user_id, db=db_session)
+    assert created_recipe
+    assert isinstance(created_recipe, Return_Recipe)
 
 
-def test_create_recipe_with_ingredients_exception(recipe_one, db_session, mocker):
+def test_create_recipe_with_ingredients_exception(recipe_one, create_user_fixture, db_session, mocker):
+    new_recipe = recipe_one
+    user_id = create_user_fixture["user_id"]
     mock_db_delete = Mock()
     sqlalchemy.orm.Session.delete = mock_db_delete
     mocker.patch("db.db_recipes.db_create_recipe_ingredients", side_effect=ValueError('Test exception handling'))
 
     with pytest.raises(ValueError):
-        new_recipe = db_create_recipe_with_ingredients(recipe_data=recipe_one, db=db_session)
+        new_recipe = db_create_recipe_with_ingredients(recipe_data=new_recipe, user_id=user_id, db=db_session)
         assert new_recipe is False
         mock_db_delete.assert_called()
 

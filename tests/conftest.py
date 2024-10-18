@@ -101,9 +101,10 @@ Return meatballs to the oven, and bake until sauce is hot and cheese is melted, 
 
 
 @pytest.fixture(scope="function")
-def create_recipe_with_ingredients(recipe_one, db_session):
+def create_recipe_with_ingredients(recipe_one, create_user_fixture, db_session):
     new_recipe = recipe_one
-    created_recipe = db_create_recipe_with_ingredients(recipe_data=new_recipe, db=db_session)
+    user_id = create_user_fixture["user_id"]
+    created_recipe = db_create_recipe_with_ingredients(recipe_data=new_recipe, user_id=user_id, db=db_session)
     return created_recipe
 
 
@@ -226,7 +227,7 @@ def return_ingredients(create_recipe):
 
 
 @pytest.fixture(scope="function")
-def recipe_one(create_user_fixture):
+def recipe_one():
     ingredients = [
         {
             "amount": 2,
@@ -353,7 +354,6 @@ def recipe_one(create_user_fixture):
     new_user = create_user_fixture
     new_recipe = Create_Recipe(
         title="Poulet au Vinaigre (Chicken with Vinegar)",
-        created_by=new_user["user_id"],
         is_vegan=False,
         is_vegetarian=False,
         ingredients=ingredients_to_add,
