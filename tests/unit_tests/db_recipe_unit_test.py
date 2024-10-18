@@ -4,7 +4,8 @@ import pytest
 import sqlalchemy
 
 from db.db_recipes import db_create_recipe_ingredients, db_create_recipe, db_create_recipe_with_ingredients, \
-    delete_recipe, delete_ingredient, get_recipe_id_from_ingredient_id, get_ingredients
+    delete_recipe, delete_ingredient, get_recipe_id_from_ingredient_id, get_ingredients, db_get_recipe, \
+    db_get_ingredient
 from models.recipe_models import Recipe, Ingredient
 from schemas.recipe_schema import Create_Recipe, Return_Recipe
 
@@ -91,3 +92,27 @@ def test_get_ingredients_failure(db_session):
     with pytest.raises(sqlalchemy.exc.NoResultFound):
         found_ingredients = get_ingredients(recipe_id, db_session)
 
+
+def test_get_recipe(create_recipe_with_ingredients, db_session):
+    recipe_id = create_recipe_with_ingredients.recipe_id
+    found_recipe = db_get_recipe(recipe_id=recipe_id, db=db_session)
+    assert found_recipe.recipe_id == recipe_id
+    assert isinstance(found_recipe, Recipe)
+
+
+def test_get_recipe_failure(db_session):
+    recipe_id = 999999999999999999
+    with pytest.raises(sqlalchemy.exc.NoResultFound):
+        found_recipe = db_get_recipe(recipe_id=recipe_id, db=db_session)
+
+
+def test_get_ingredient(create_recipe_with_ingredients, db_session):
+    ingredient_id = create_recipe_with_ingredients.ingredients[0].ingredient_id
+    found_ingredient = db_get_ingredient(ingredient_id=ingredient_id, db=db_session)
+    assert isinstance(found_ingredient, Ingredient)
+
+
+def test_get_ingredient_not_found(db_session):
+    ingredient_id = 9999999999999
+    with pytest.raises(sqlalchemy.exc.NoResultFound):
+        found_ingredient = db_get_ingredient(ingredient_id=ingredient_id, db=db_session)

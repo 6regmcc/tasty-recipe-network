@@ -8,13 +8,17 @@ from models.recipe_models import Recipe, Ingredient
 from schemas.recipe_schema import Create_Recipe, Return_Recipe, Create_Ingredient, Return_Ingredient
 
 
-def get_recipe(recipe_id: int, db: Session) -> Recipe:
-    found_recipe = db.query(Recipe).filter(Recipe.recipe_id == recipe_id).one()
+def db_get_recipe(recipe_id: int, db: Session) -> Recipe:
+    found_recipe = db.get(Recipe, recipe_id)
+    if not found_recipe:
+        raise sqlalchemy.exc.NoResultFound
     return found_recipe
 
 
-def get_ingredient(ingredient_id: int, db: Session) -> Ingredient:
-    found_ingredient = db.query(Ingredient).filter(Ingredient.ingredient_id == ingredient_id).one()
+def db_get_ingredient(ingredient_id: int, db: Session) -> Ingredient:
+    found_ingredient = db.get(Ingredient, ingredient_id)
+    if not found_ingredient:
+        raise sqlalchemy.exc.NoResultFound
     return found_ingredient
 
 
