@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from starlette.requests import Request
 
@@ -20,6 +20,8 @@ recipe_router = APIRouter(
 def get_users_recipies(db: Annotated[Session, Depends(get_db)], token: Annotated[str, Depends(oauth2_scheme)]):
     user_id = get_current_user(token=token, db=db).user_id
     users_recipies = db_get_users_recipies(user_id=user_id, db=db)
+    if not users_recipies:
+        raise HTTPException(status_code=404, detail="No recipies found")
     return users_recipies
 
 
