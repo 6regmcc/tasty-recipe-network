@@ -86,7 +86,11 @@ def authorised_user(create_user_fixture, test_client):
     data = response.json()
 
     token = data["access_token"]
-    return token
+    user_data = {
+        "user_id": new_user["user_id"],
+        "token": token
+    }
+    return user_data
 
 
 @pytest.fixture(scope="function")
@@ -481,8 +485,3 @@ def create_user2_fixture(db_session):
     return {**new_user.to_dict(), **new_user_details.to_dict()}
 
 
-
-
-
-
-    #
