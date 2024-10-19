@@ -138,10 +138,17 @@ def db_get_users_recipies(user_id: int, db: Session):
     return return_recipies
 
 
-def db_get_all_recipies(db: Session):
+def db_get_all_recipies(db: Session) -> list[Return_Recipe]:
     found_recipies = db.scalars(select(Recipe)).all()
     return_recipies = [
         Return_Recipe(**recipe.to_dict(), ingredients=[ingredient.to_dict() for ingredient in recipe.ingredients]) for
         recipe in found_recipies]
 
     return return_recipies
+
+
+def db_check_if_user_owns_recipe(recipe_id: int, user_id: int, db: Session):
+    recipe = db.scalars(select(Recipe).where(Recipe.created_by == user_id and Recipe.recipe_id == recipe_id)).first()
+    if not recipe:
+        raise sqlalchemy.exc.NoResultFound
+    return True

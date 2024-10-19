@@ -7,7 +7,7 @@ from db.db_recipes import db_create_recipe_ingredients, db_create_recipe, db_cre
     delete_recipe, delete_ingredient, db_get_ingredients, db_get_recipe, \
     db_get_ingredient, db_get_recipe_with_ingredients, add_ingredient_to_recipe, db_edit_ingredient, \
     db_get_recipe_id_from_ingredient_id, db_edit_recipe, db_get_all_recipies, \
-    db_get_users_recipies
+    db_get_users_recipies, db_check_if_user_owns_recipe
 from models.recipe_models import Recipe, Ingredient
 from schemas.recipe_schema import Create_Recipe, Return_Recipe, Create_Ingredient, Update_Recipe
 
@@ -274,3 +274,11 @@ def test_get_users_recipies(create_user_fixture, create_user2_fixture, recipe_on
 
     for recipe in user_2_recipies:
         assert isinstance(recipe, Return_Recipe)
+
+
+
+
+def test_check_if_user_owns_recipe(create_user_fixture, recipe_one, db_session):
+    user_1 = create_user_fixture
+    recipe1 = db_create_recipe_with_ingredients(recipe_data=recipe_one, user_id=user_1["user_id"], db=db_session)
+    assert db_check_if_user_owns_recipe(recipe_id=recipe1.recipe_id, user_id=user_1["user_id"], db=db_session)
