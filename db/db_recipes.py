@@ -31,21 +31,10 @@ def db_get_ingredients(recipe_id: int, db: Session) -> Sequence[Ingredient]:
 
 
 def db_get_recipe_with_ingredients(recipe_id: int, db: Session) -> Return_Recipe:
-    found_recipe = None
-    found_ingredients = None
-    try:
-        found_recipe = db_get_recipe(recipe_id=recipe_id, db=db)
-    except Exception as e:
-        raise e
-    try:
-        found_ingredients = db_get_ingredients(recipe_id=recipe_id, db=db)
-    except Exception as e:
-        raise e
-
-    recipe_to_return = Return_Recipe(**found_recipe.to_dict(),
-                                     ingredients=[Return_Ingredient(**ingredient.to_dict()) for ingredient in
-                                                  found_ingredients])
-    return recipe_to_return
+    recipe = db.scalars(select(Recipe).where(Recipe.recipe_id == recipe_id)).one()
+    return_recipe = Return_Recipe(**recipe.to_dict(),
+                                  ingredients=[ingredient.to_dict() for ingredient in recipe.ingredients])
+    return return_recipe
 
 
 def db_get_recipe_id_from_ingredient_id(ingredient_id: int, db: Session) -> int:
@@ -141,18 +130,24 @@ def db_create_recipe_with_ingredients(recipe_data: Create_Recipe, user_id: int, 
 
 
 def db_get_recipe_by_id_with_join(recipe_id: int, db: Session):
-    recipe = db.scalar(select(Recipe).join(Recipe.ingredients).filter(Ingredient.recipe_id == recipe_id))
-    return_recipe = Return_Recipe(**recipe.to_dict(), ingredients=[ingredient.to_dict() for ingredient in recipe.ingredients])
+    # recipe = db.scalar(select(Recipe).join(Recipe.ingredients).filter(Ingredient.recipe_id == recipe_id))
+    recipe = db.scalar(select(Recipe).where(Recipe.recipe_id == recipe_id))
+    return_recipe = Return_Recipe(**recipe.to_dict(),
+                                  ingredients=[ingredient.to_dict() for ingredient in recipe.ingredients])
     return return_recipe
 
 
-def db_get_users_recipies(user_id:int, db :Session):
-    recipies = db.scalar(select(Recipe).filter(Recipe.created_by == user_id).join(Recipe.ingredients).filter(Ingredient.recipe_id == Recipe.recipe_id)).all()
+def db_get_users_recipies(user_id: int, db: Session):
+    recipies = db.scalar(select(Recipe).filter(Recipe.created_by == user_id).join(Recipe.ingredients).filter(
+        Ingredient.recipe_id == Recipe.recipe_id)).all()
+
     return recipies
 
-def db_get_all_recipies(db: Session):
 
+def db_get_all_recipies(db: Session):
     found_recipies = db.scalars(select(Recipe)).all()
-    return_recipies = [Return_Recipe(**recipe.to_dict(), ingredients=[ingredient.to_dict() for ingredient in recipe.ingredients]) for recipe in found_recipies]
+    return_recipies = [
+        Return_Recipe(**recipe.to_dict(), ingredients=[ingredient.to_dict() for ingredient in recipe.ingredients]) for
+        recipe in found_recipies]
 
     return return_recipies
