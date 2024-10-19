@@ -6,7 +6,7 @@ import sqlalchemy
 from db.db_recipes import db_create_recipe_ingredients, db_create_recipe, db_create_recipe_with_ingredients, \
     delete_recipe, delete_ingredient, db_get_ingredients, db_get_recipe, \
     db_get_ingredient, db_get_recipe_with_ingredients, add_ingredient_to_recipe, db_edit_ingredient, \
-    db_get_recipe_id_from_ingredient_id, db_edit_recipe, db_get_recipe_by_id_with_join
+    db_get_recipe_id_from_ingredient_id, db_edit_recipe, db_get_recipe_by_id_with_join, db_get_all_recipies
 from models.recipe_models import Recipe, Ingredient
 from schemas.recipe_schema import Create_Recipe, Return_Recipe, Create_Ingredient, Update_Recipe
 
@@ -234,3 +234,27 @@ def test_get_recipe_with_join(create_recipe_with_ingredients, db_session):
     recipe_id = create_recipe_with_ingredients.recipe_id
     found_recipe = db_get_recipe_by_id_with_join(recipe_id=recipe_id, db=db_session)
     assert isinstance(found_recipe, Return_Recipe)
+
+
+def test_get_all_users_recipies(create_recipe_with_ingredients, db_session):
+    pass
+
+
+def test_get_all_recipies(create_user_fixture, create_user2_fixture, recipe_one, recipe_two, recipe_three, db_session):
+    user_1 = create_user_fixture
+    user_2 = create_user2_fixture
+
+    recipe1 = db_create_recipe_with_ingredients(recipe_data=recipe_one, user_id=user_1["user_id"], db=db_session)
+    recipe2 = db_create_recipe_with_ingredients(recipe_data=recipe_two, user_id=user_1["user_id"], db=db_session)
+    recipe3 = db_create_recipe_with_ingredients(recipe_data=recipe_three, user_id=user_1["user_id"], db=db_session)
+    recipe4 = db_create_recipe_with_ingredients(recipe_data=recipe_one, user_id=user_2["user_id"], db=db_session)
+    recipe5 = db_create_recipe_with_ingredients(recipe_data=recipe_two, user_id=user_2["user_id"], db=db_session)
+
+    recipes = db_get_all_recipies(db=db_session)
+    assert len(recipes) == 5
+    assert len(recipes[3].ingredients) == 15
+    assert recipes[0].created_by == user_1["user_id"]
+    assert recipes[3].created_by == user_2["user_id"]
+    for recipe in recipes:
+        assert isinstance(recipe, Return_Recipe)
+

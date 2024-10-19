@@ -144,3 +144,15 @@ def db_get_recipe_by_id_with_join(recipe_id: int, db: Session):
     recipe = db.scalar(select(Recipe).join(Recipe.ingredients).filter(Ingredient.recipe_id == recipe_id))
     return_recipe = Return_Recipe(**recipe.to_dict(), ingredients=[ingredient.to_dict() for ingredient in recipe.ingredients])
     return return_recipe
+
+
+def db_get_users_recipies(user_id:int, db :Session):
+    recipies = db.scalar(select(Recipe).filter(Recipe.created_by == user_id).join(Recipe.ingredients).filter(Ingredient.recipe_id == Recipe.recipe_id)).all()
+    return recipies
+
+def db_get_all_recipies(db: Session):
+
+    found_recipies = db.scalars(select(Recipe)).all()
+    return_recipies = [Return_Recipe(**recipe.to_dict(), ingredients=[ingredient.to_dict() for ingredient in recipe.ingredients]) for recipe in found_recipies]
+
+    return return_recipies

@@ -48,8 +48,6 @@ def test_client(db_session):
 
     app.dependency_overrides[get_db] = override_get_db
 
-
-
     with TestClient(app) as test_client:
         yield test_client
 
@@ -397,3 +395,94 @@ Remove thighs from pan, and turn heat to high. Boil for a few minutes, or until 
 Reduce heat to low and add butter and tarragon. Stir until butter disappears. Add chicken back to the pan, and baste with sauce for a few minutes before serving. """
     )
     return new_recipe
+
+
+@pytest.fixture(scope="function")
+def recipe_two():
+    recipe = {
+        "title": "recipe_2",
+        "is_vegan": True,
+        "is_vegetarian": True,
+        "body": "string",
+
+    }
+
+    ingredients = [
+        {
+            "ingredient_name": "recipe_2a",
+            "amount": 0,
+            "unit": "string",
+            "notes": "string",
+            "is_metric": True
+        },
+        {
+            "ingredient_name": "recipe_2b",
+            "amount": 0,
+            "unit": "string",
+            "notes": "string",
+            "is_metric": False
+        }
+    ]
+
+    ingredients_to_add = [Create_Ingredient(**ingredient) for ingredient in ingredients]
+    recipe_to_add = Create_Recipe(**recipe, ingredients=ingredients_to_add)
+    return recipe_to_add
+
+
+@pytest.fixture(scope="function")
+def recipe_three():
+    recipe = {
+        "title": "recipe_three",
+        "is_vegan": True,
+        "is_vegetarian": False,
+        "body": "string",
+
+    }
+    ingredients = [
+        {
+            "ingredient_name": "recipe_three_a",
+            "amount": 0,
+            "unit": "string",
+            "notes": "string",
+            "is_metric": False
+        },
+        {
+            "ingredient_name": "recipe_three_b",
+            "amount": 0,
+            "unit": "string",
+            "notes": "string",
+            "is_metric": False
+        }
+    ]
+    ingredients_to_add = [Create_Ingredient(**ingredient) for ingredient in ingredients]
+    recipe_to_add = Create_Recipe(**recipe, ingredients=ingredients_to_add)
+    return recipe_to_add
+
+
+@pytest.fixture(scope="function")
+def create_user2_fixture(db_session):
+    new_user = User_Auth(
+        username="tom5@gmail.com",
+        password=get_password_hash("Password1"),
+
+    )
+    db_session.add(new_user)
+    db_session.commit()
+    db_session.refresh(new_user)
+    new_user_details = User_Details(
+        first_name="Tom",
+        last_name="Smith",
+        user_auth_id=new_user.user_id
+    )
+    db_session.add(new_user_details)
+    db_session.commit()
+    db_session.refresh(new_user_details)
+
+    return {**new_user.to_dict(), **new_user_details.to_dict()}
+
+
+
+
+
+
+    #
