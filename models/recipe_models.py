@@ -3,7 +3,7 @@ from typing import Optional
 from sqlalchemy import ForeignKey
 from sqlalchemy import String
 
-from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import Mapped, relationship
 from sqlalchemy.orm import mapped_column
 
 from db.db_connection import Base, dataclass_sql
@@ -19,6 +19,7 @@ class Recipe(Base):
     is_vegan: Mapped[bool] = mapped_column(default=False)
     is_vegetarian: Mapped[str] = mapped_column(default=False)
     body: Mapped[str] = mapped_column(String(2000))
+    ingredients = relationship('Ingredient', backref='recipe')
 
 
 @dataclass_sql

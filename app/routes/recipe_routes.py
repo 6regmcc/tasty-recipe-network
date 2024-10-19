@@ -16,12 +16,29 @@ recipe_router = APIRouter(
 )
 
 
+@recipe_router.get("/user_recipies")
+def get_users_recipies(db: Annotated[Session, Depends(get_db)], token: Annotated[str, Depends(oauth2_scheme)]):
+    user_id = get_current_user(token=token, db=db).user_id
+
+
+
+
+@recipe_router.get("/{id}")
+def get_recipe_by_id():
+    pass
+
+
 @recipe_router.post("/create_recipe")
 def create_recipe(recipe_data: Create_Recipe, db: Annotated[Session, Depends(get_db)], token: Annotated[str, Depends(oauth2_scheme)]):
-    print(token)
-    #username = request.user
     user_id = get_current_user(token=token, db=db).user_id
-    new_recipe = db_create_recipe_with_ingredients(recipe_data=recipe_data, user_id=user_id, db=db)
+    try:
+        new_recipe = db_create_recipe_with_ingredients(recipe_data=recipe_data, user_id=user_id, db=db)
+    except Exception as e:
+        raise e
     return new_recipe
 
 
+
+@recipe_router.put("/update_recipe/{id}")
+def update_recipe():
+    pass

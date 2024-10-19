@@ -99,8 +99,8 @@ def delete_recipe(recipe_id: int, db: Session):
     return recipe_to_delete
 
 
-def db_create_recipe(recipe_data: Create_Recipe, user_id: int,  db: Session):
-    new_recipe = Recipe(**recipe_data.model_dump(exclude={"ingredients"}),created_by=user_id)
+def db_create_recipe(recipe_data: Create_Recipe, user_id: int, db: Session):
+    new_recipe = Recipe(**recipe_data.model_dump(exclude={"ingredients"}), created_by=user_id)
     db.add(new_recipe)
     db.commit()
     db.refresh(new_recipe)
@@ -138,3 +138,9 @@ def db_create_recipe_with_ingredients(recipe_data: Create_Recipe, user_id: int, 
                                    ingredients=[Return_Ingredient(**ingredient.to_dict()) for ingredient in
                                                 new_ingredients])
     return created_recipe
+
+
+def db_get_recipe_by_id_with_join(recipe_id: int, db: Session):
+    recipe = db.scalar(select(Recipe).join(Recipe.ingredients).filter(Ingredient.recipe_id == recipe_id))
+    return_recipe = Return_Recipe(**recipe.to_dict(), ingredients=[ingredient.to_dict() for ingredient in recipe.ingredients])
+    return return_recipe

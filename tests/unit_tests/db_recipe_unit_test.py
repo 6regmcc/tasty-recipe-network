@@ -6,7 +6,7 @@ import sqlalchemy
 from db.db_recipes import db_create_recipe_ingredients, db_create_recipe, db_create_recipe_with_ingredients, \
     delete_recipe, delete_ingredient, db_get_ingredients, db_get_recipe, \
     db_get_ingredient, db_get_recipe_with_ingredients, add_ingredient_to_recipe, db_edit_ingredient, \
-    db_get_recipe_id_from_ingredient_id, db_edit_recipe
+    db_get_recipe_id_from_ingredient_id, db_edit_recipe, db_get_recipe_by_id_with_join
 from models.recipe_models import Recipe, Ingredient
 from schemas.recipe_schema import Create_Recipe, Return_Recipe, Create_Ingredient, Update_Recipe
 
@@ -29,7 +29,7 @@ def test_create_recipe(recipe_one, create_user_fixture, db_session):
     assert isinstance(new_recipe, Recipe)
 
 
-def test_create_recipe_with_ingredients(recipe_one,create_user_fixture, db_session):
+def test_create_recipe_with_ingredients(recipe_one, create_user_fixture, db_session):
     new_recipe = recipe_one
     user_id = create_user_fixture["user_id"]
     created_recipe = db_create_recipe_with_ingredients(recipe_data=new_recipe, user_id=user_id, db=db_session)
@@ -228,3 +228,9 @@ def test_db_edit_recipe_failure(db_session):
     )
     with pytest.raises(sqlalchemy.exc.NoResultFound):
         updated_recipe = db_edit_recipe(update_recipe_data, recipe_id, db_session)
+
+
+def test_get_recipe_with_join(create_recipe_with_ingredients, db_session):
+    recipe_id = create_recipe_with_ingredients.recipe_id
+    found_recipe = db_get_recipe_by_id_with_join(recipe_id=recipe_id, db=db_session)
+    assert isinstance(found_recipe, Return_Recipe)
