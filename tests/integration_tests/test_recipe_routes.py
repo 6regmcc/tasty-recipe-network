@@ -1,4 +1,4 @@
-from db.db_recipes import db_create_recipe_with_ingredients
+from db.db_recipes import db_create_recipe_with_ingredients, db_get_users_recipies
 from schemas.recipe_schema import Return_Recipe
 
 
@@ -41,6 +41,7 @@ def test_get_users_recipes(test_client, db_session, authorised_user, recipe_one,
         'Authorization': f'Bearer {user_1["token"]}'
     }
 
+
     response = test_client.get("recipies/user_recipies", headers=headers)
     assert response.status_code == 200
     recipies = response.json()
@@ -59,3 +60,45 @@ def test_get_users_recipes_failure(test_client, authorised_user, db_session):
     recipies = response.json()
     assert recipies["detail"] == "No recipies found"
 
+
+def test_get_recipe_by_id(test_client, db_session, authorised_user, recipe_one):
+    user_1 = authorised_user
+    recipe_id = db_create_recipe_with_ingredients(recipe_data=recipe_one, user_id=user_1["user_id"], db=db_session).recipe_id
+    response = test_client.get(f"recipies/recipe/{recipe_id}")
+    recipe = response.json()
+    assert response.status_code == 200
+    assert Return_Recipe(**recipe)
+    assert recipe_id == recipe["recipe_id"]
+
+
+def test_get_recipe_by_id_failure(test_client, db_session):
+    response = test_client.get(f"recipies/recipe/99999999999")
+    recipie = response.json()
+    assert response.status_code == 404
+    assert recipie["detail"] == "No recipie found"
+
+
+def test_get_all_recipies(test_client, create_user_fixture, create_user2_fixture, recipe_one, recipe_two, recipe_three,
+                            db_session):
+    user_1 = create_user_fixture
+    user_2 = create_user2_fixture
+
+    recipe1 = db_create_recipe_with_ingredients(recipe_data=recipe_one, user_id=user_1["user_id"], db=db_session)
+    recipe2 = db_create_recipe_with_ingredients(recipe_data=recipe_two, user_id=user_1["user_id"], db=db_session)
+    recipe3 = db_create_recipe_with_ingredients(recipe_data=recipe_three, user_id=user_1["user_id"], db=db_session)
+    recipe4 = db_create_recipe_with_ingredients(recipe_data=recipe_one, user_id=user_2["user_id"], db=db_session)
+    recipe5 = db_create_recipe_with_ingredients(recipe_data=recipe_two, user_id=user_2["user_id"], db=db_session)
+
+    response = test_client.get("recipies/all")
+    recipies = response.json()
+    assert len(recipies) == 5
+    recipie_ids = set()
+    for recipe in recipies:
+        assert Return_Recipe(**recipe)
+        recipie_ids.add(recipe["recipe_id"])
+    assert len(recipie_ids) == 5
+    assert recipe1.recipe_id in recipie_ids
+    assert recipe2.recipe_id in recipie_ids
+    assert recipe3.recipe_id in recipie_ids
+    assert recipe4.recipe_id in recipie_ids
+    assert recipe5.recipe_id in recipie_ids
