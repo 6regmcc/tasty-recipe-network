@@ -49,7 +49,8 @@ def db_edit_recipe(recipe: Update_Recipe, recipe_id: int, db: Session):
     for key, value in recipe:
         setattr(recipe_to_update, key, value)
     db.commit()
-    return recipe_to_update
+    ingredients = db_get_ingredients(recipe_id=recipe_id, db=db)
+    return Return_Recipe(**recipe_to_update.to_dict(), ingredients=[Return_Ingredient(**ingredient.to_dict()) for ingredient in ingredients])
 
 
 def db_edit_ingredient(ingredient: Create_Ingredient, ingredient_id: int, db: Session) -> Ingredient:
@@ -148,7 +149,8 @@ def db_get_all_recipies(db: Session) -> list[Return_Recipe]:
 
 
 def db_check_if_user_owns_recipe(recipe_id: int, user_id: int, db: Session):
-    recipe = db.scalars(select(Recipe).where(Recipe.created_by == user_id and Recipe.recipe_id == recipe_id)).first()
+    recipe = db.scalars(select(Recipe).filter(Recipe.created_by == user_id and Recipe.recipe_id == recipe_id)).first()
     if not recipe:
         raise sqlalchemy.exc.NoResultFound
     return True
+

@@ -211,12 +211,14 @@ def test_db_edit_recipe(create_recipe_with_ingredients, db_session):
     )
 
     updated_recipe = db_edit_recipe(update_recipe_data, recipe_id, db_session)
-    assert isinstance(updated_recipe, Recipe)
+    assert isinstance(updated_recipe, Return_Recipe)
     assert updated_recipe.recipe_id == recipe_id
     assert updated_recipe.title == update_recipe_data.title
     assert updated_recipe.is_vegan == update_recipe_data.is_vegan
     assert update_recipe_data.is_vegetarian == update_recipe_data.is_vegetarian
     assert update_recipe_data.body == update_recipe_data.body
+    assert len(updated_recipe.ingredients) == len(recipe_to_update.ingredients)
+    assert updated_recipe.ingredients[0].ingredient_name == recipe_to_update.ingredients[0].ingredient_name
 
 
 def test_db_edit_recipe_failure(db_session):
@@ -229,10 +231,6 @@ def test_db_edit_recipe_failure(db_session):
     )
     with pytest.raises(sqlalchemy.exc.NoResultFound):
         updated_recipe = db_edit_recipe(update_recipe_data, recipe_id, db_session)
-
-
-
-
 
 
 def test_get_all_recipies(create_user_fixture, create_user2_fixture, recipe_one, recipe_two, recipe_three, db_session):
@@ -276,9 +274,13 @@ def test_get_users_recipies(create_user_fixture, create_user2_fixture, recipe_on
         assert isinstance(recipe, Return_Recipe)
 
 
-
-
 def test_check_if_user_owns_recipe(create_user_fixture, recipe_one, db_session):
     user_1 = create_user_fixture
     recipe1 = db_create_recipe_with_ingredients(recipe_data=recipe_one, user_id=user_1["user_id"], db=db_session)
     assert db_check_if_user_owns_recipe(recipe_id=recipe1.recipe_id, user_id=user_1["user_id"], db=db_session)
+
+
+def test_check_if_user_owns_recipe_failure(create_user_fixture, db_session):
+    user_1 = create_user_fixture
+    with pytest.raises(sqlalchemy.exc.NoResultFound):
+        recipe1 = db_check_if_user_owns_recipe(recipe_id=000000000, user_id=user_1["user_id"], db=db_session)

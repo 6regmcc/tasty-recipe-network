@@ -102,3 +102,28 @@ def test_get_all_recipies(test_client, create_user_fixture, create_user2_fixture
     assert recipe3.recipe_id in recipie_ids
     assert recipe4.recipe_id in recipie_ids
     assert recipe5.recipe_id in recipie_ids
+
+
+def test_update_recipe(test_client, authorised_user, recipe_one, db_session):
+    user = authorised_user["user_id"]
+    token = authorised_user["token"]
+    headers = {
+        'Authorization': f'Bearer {authorised_user["token"]}'
+    }
+    new_recipe = db_create_recipe_with_ingredients(recipe_data=recipe_one, user_id=user, db=db_session)
+    recipe_update_data = {
+
+            "title": "update_title",
+            "is_vegan": True,
+            "is_vegetarian": False,
+            "body": "updated body",
+
+
+    }
+    response = test_client.put(f"recipies/update_recipe/{new_recipe.recipe_id}", json=recipe_update_data, headers=headers)
+    updated_recipe = response.json()
+    assert response.status_code == 200
+    assert updated_recipe["title"] == recipe_update_data["title"]
+    assert updated_recipe["is_vegan"] == recipe_update_data["is_vegan"]
+    assert updated_recipe["is_vegetarian"] == recipe_update_data["is_vegetarian"]
+    assert updated_recipe["body"] == recipe_update_data["body"]
