@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "tasty-recipe-network"
+version = "0.1.0"
+description = ""
+authors = ["Greg McCarthy"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.13"
+fastapi = {extras = ["standard"], version = "^0.115.3"}
+sqlalchemy = "^2.0.36"
+psycopg = {extras = ["binary"], version = "^3.2.3"}
+python-multipart = "^0.0.12"
+pyjwt = "^2.9.0"
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
