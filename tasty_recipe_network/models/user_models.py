@@ -8,7 +8,7 @@ from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 
 
-from db.db_connection import Base
+from tasty_recipe_network.db.db_connection import Base
 
 
 class User_Auth(Base):

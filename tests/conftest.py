@@ -1,19 +1,17 @@
 import os
-from datetime import timedelta
 
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from starlette.testclient import TestClient
 
-from app.main import app
-from authentication.user_auth_routes import get_password_hash, oauth2_scheme, create_access_token
-from db.db_connection import Base, get_db
-from models.recipe_models import Recipe
-from models.user_models import User_Auth, User_Details
-from schemas.recipe_schema import Create_Ingredient, Create_Recipe
-from schemas.user_schema import Return_User
-from db.db_recipes import db_create_recipe_with_ingredients
+from tasty_recipe_network.main import app
+from tasty_recipe_network.routes.user_auth_routes import get_password_hash
+from tasty_recipe_network.db.db_connection import Base, get_db
+from tasty_recipe_network.models.recipe_models import Recipe
+from tasty_recipe_network.models.user_models import User_Auth, User_Details
+from tasty_recipe_network.schemas.recipe_schema import Create_Ingredient, Create_Recipe
+from tasty_recipe_network.db.db_recipes import db_create_recipe_with_ingredients
 
 TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL")
 ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")

@@ -1,13 +1,9 @@
 import os
-from typing import Generator
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from sqlalchemy.ext.declarative import declared_attr
-from sqlalchemy.ext.declarative import declarative_base
-
-from db.db_connection import Base
+from tasty_recipe_network.db.db_connection import Base
 
 TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL")
 

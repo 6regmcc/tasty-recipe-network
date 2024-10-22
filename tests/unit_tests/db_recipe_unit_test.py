@@ -3,13 +3,13 @@ from unittest.mock import Mock
 import pytest
 import sqlalchemy
 
-from db.db_recipes import db_create_recipe_ingredients, db_create_recipe, db_create_recipe_with_ingredients, \
+from tasty_recipe_network.db.db_recipes import db_create_recipe_ingredients, db_create_recipe, db_create_recipe_with_ingredients, \
     delete_recipe, delete_ingredient, db_get_ingredients, db_get_recipe, \
     db_get_ingredient, db_get_recipe_with_ingredients, add_ingredient_to_recipe, db_edit_ingredient, \
     db_get_recipe_id_from_ingredient_id, db_edit_recipe, db_get_all_recipies, \
     db_get_users_recipies, db_check_if_user_owns_recipe
-from models.recipe_models import Recipe, Ingredient
-from schemas.recipe_schema import Create_Recipe, Return_Recipe, Create_Ingredient, Update_Recipe
+from tasty_recipe_network.models.recipe_models import Recipe, Ingredient
+from tasty_recipe_network.schemas.recipe_schema import Return_Recipe, Create_Ingredient, Update_Recipe
 
 
 def test_create_ingredients(return_ingredients, create_recipe, db_session):
@@ -43,7 +43,7 @@ def test_create_recipe_with_ingredients_exception(recipe_one, create_user_fixtur
     user_id = create_user_fixture["user_id"]
     mock_db_delete = Mock()
     sqlalchemy.orm.Session.delete = mock_db_delete
-    mocker.patch("db.db_recipes.db_create_recipe_ingredients", side_effect=ValueError('Test exception handling'))
+    mocker.patch("tasty_recipe_network.db.db_recipes.db_create_recipe_ingredients", side_effect=ValueError('Test exception handling'))
 
     with pytest.raises(ValueError):
         new_recipe = db_create_recipe_with_ingredients(recipe_data=new_recipe, user_id=user_id, db=db_session)

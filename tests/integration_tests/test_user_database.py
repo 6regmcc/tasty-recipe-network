@@ -1,10 +1,8 @@
-import pydantic_core
 import pytest
 import sqlalchemy
-from pydantic import ValidationError
 
-from db.db_user_auth import db_get_user_by_username, db_get_user_details_by_id, db_create_user
-from schemas.user_schema import Create_User, Return_User
+from tasty_recipe_network.db.db_user_auth import db_get_user_by_username, db_get_user_details_by_id, db_create_user
+from tasty_recipe_network.schemas.user_schema import Create_User, Return_User
 
 
 # db_get_user_by_username

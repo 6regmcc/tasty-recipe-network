@@ -6,7 +6,7 @@ from sqlalchemy import String
 from sqlalchemy.orm import Mapped, relationship
 from sqlalchemy.orm import mapped_column
 
-from db.db_connection import Base, dataclass_sql
+from tasty_recipe_network.db.db_connection import Base, dataclass_sql
 
 
 @dataclass_sql

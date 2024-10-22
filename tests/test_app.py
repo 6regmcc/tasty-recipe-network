@@ -1,14 +1,3 @@
-import pytest
-from fastapi.testclient import TestClient
-
-from app.main import app
-from schemas.user_schema import Notes_Schema_response
-from tests.database.db_database_connection import db_create_all, db_drop_all
-
-
-
-
-
 def test_first(test_client):
     response = test_client.get('/')
     assert response.status_code == 200

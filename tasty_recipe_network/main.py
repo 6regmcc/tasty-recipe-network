@@ -1,14 +1,13 @@
 import uvicorn
 from fastapi import FastAPI, Depends
 from contextlib import asynccontextmanager
-from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
-from db.db_connection import get_db, db_create_all
-from models.user_models import Notes, Base
-from schemas.user_schema import Notes_Schema, Notes_Schema_response
-from authentication import user_auth_routes
-from app.routes.recipe_routes import recipe_router, recipe_router_no_auth
+from tasty_recipe_network.db.db_connection import get_db, db_create_all
+from tasty_recipe_network.models.user_models import Notes
+from tasty_recipe_network.schemas.user_schema import Notes_Schema, Notes_Schema_response
+from tasty_recipe_network.routes import user_auth_routes
+from tasty_recipe_network.routes.recipe_routes import recipe_router, recipe_router_no_auth
 
 
 @asynccontextmanager

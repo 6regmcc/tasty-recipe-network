@@ -1,8 +1,8 @@
 import sqlalchemy
 from sqlalchemy.orm import Session
 
-from models.user_models import User_Auth, User_Details
-from schemas.user_schema import Create_User, Return_User, Return_User_With_Pwd
+from tasty_recipe_network.models.user_models import User_Auth, User_Details
+from tasty_recipe_network.schemas.user_schema import Create_User, Return_User, Return_User_With_Pwd
 
 
 def db_create_user(create_user_data: Create_User, db: Session):

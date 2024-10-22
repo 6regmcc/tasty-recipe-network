@@ -3,13 +3,12 @@ from typing import Annotated
 import sqlalchemy
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from starlette.requests import Request
 
-from authentication.user_auth_routes import oauth2_scheme, router, get_current_user
-from db.db_connection import get_db
-from db.db_recipes import db_create_recipe_with_ingredients, db_get_users_recipies, db_get_recipe_with_ingredients, \
+from tasty_recipe_network.routes.user_auth_routes import oauth2_scheme, get_current_user
+from tasty_recipe_network.db.db_connection import get_db
+from tasty_recipe_network.db.db_recipes import db_create_recipe_with_ingredients, db_get_users_recipies, db_get_recipe_with_ingredients, \
     db_get_all_recipies, db_check_if_user_owns_recipe, db_edit_recipe
-from schemas.recipe_schema import Create_Recipe, Update_Recipe, Return_Recipe
+from tasty_recipe_network.schemas.recipe_schema import Create_Recipe, Update_Recipe, Return_Recipe
 
 recipe_router = APIRouter(
     prefix="/recipies",

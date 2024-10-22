@@ -3,9 +3,9 @@ from datetime import timedelta
 
 import jwt
 
-from authentication.user_auth_routes import pwd_context, verify_password, get_password_hash, authenticate_user, \
+from tasty_recipe_network.routes.user_auth_routes import pwd_context, verify_password, get_password_hash, authenticate_user, \
     create_access_token
-from schemas.user_schema import Return_User_With_Pwd
+from tasty_recipe_network.schemas.user_schema import Return_User_With_Pwd
 
 
 def mock_output(return_value=None):
@@ -35,7 +35,7 @@ def test_authenticate_user_success(monkeypatch, db_session):
         user_id=12345
     )
 
-    monkeypatch.setattr("authentication.user_auth_routes.db_get_user_by_username", mock_output(returned_user))
+    monkeypatch.setattr("tasty_recipe_network.routes.user_auth_routes.db_get_user_by_username", mock_output(returned_user))
     user = authenticate_user(username="test@email.com", password="Password1", db=db_session)
     assert user
     assert isinstance(user, Return_User_With_Pwd)
@@ -50,7 +50,7 @@ def test_authenticate_user_failure(monkeypatch, db_session):
         user_id=12345
     )
 
-    monkeypatch.setattr("authentication.user_auth_routes.db_get_user_by_username", mock_output(returned_user))
+    monkeypatch.setattr("tasty_recipe_network.routes.user_auth_routes.db_get_user_by_username", mock_output(returned_user))
     user = authenticate_user(username="test@email.com", password="Password2", db=db_session)
     assert user is False
 

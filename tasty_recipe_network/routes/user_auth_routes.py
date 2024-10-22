@@ -11,15 +11,13 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jwt import InvalidTokenError
 from passlib.context import CryptContext
 from pydantic import BaseModel
-from sqlalchemy.dialects.postgresql import psycopg2
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from starlette import status
 
-from db.db_connection import get_db
-from db.db_user_auth import db_create_user, db_get_user_by_username
-from models.user_models import User_Auth, User_Details
-from schemas.user_schema import Create_User, Return_User, Return_User_With_Pwd, Authenticate_User
+from tasty_recipe_network.db.db_connection import get_db
+from tasty_recipe_network.db.db_user_auth import db_create_user, db_get_user_by_username
+from tasty_recipe_network.schemas.user_schema import Create_User, Return_User, Return_User_With_Pwd
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="user/token")
 

@@ -4,8 +4,8 @@ import sqlalchemy
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from models.recipe_models import Recipe, Ingredient
-from schemas.recipe_schema import Create_Recipe, Return_Recipe, Create_Ingredient, Return_Ingredient, Update_Recipe
+from tasty_recipe_network.models.recipe_models import Recipe, Ingredient
+from tasty_recipe_network.schemas.recipe_schema import Create_Recipe, Return_Recipe, Create_Ingredient, Return_Ingredient, Update_Recipe
 
 
 def db_get_recipe(recipe_id: int, db: Session) -> Recipe:

@@ -2,8 +2,6 @@ import os
 
 import jwt
 
-from models.user_models import User_Auth, User_Details
-
 
 def test_create_user(test_client):
     body = {

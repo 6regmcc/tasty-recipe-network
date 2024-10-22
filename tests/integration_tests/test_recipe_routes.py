@@ -1,5 +1,5 @@
-from db.db_recipes import db_create_recipe_with_ingredients, db_get_users_recipies
-from schemas.recipe_schema import Return_Recipe
+from tasty_recipe_network.db.db_recipes import db_create_recipe_with_ingredients
+from tasty_recipe_network.schemas.recipe_schema import Return_Recipe
 
 
 def test_create_recipe(test_client, create_user_fixture, authorised_user):
