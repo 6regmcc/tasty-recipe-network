@@ -3,7 +3,8 @@
 
 
 fastapi dev app/main.py
-
+docker run -dp 127.0.0.1:3000:80 tasty-recipe-network
+http://localhost:3000/docs
 
 
 

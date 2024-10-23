@@ -18,15 +18,15 @@ from starlette import status
 from tasty_recipe_network.db.db_connection import get_db
 from tasty_recipe_network.db.db_user_auth import db_create_user, db_get_user_by_username
 from tasty_recipe_network.schemas.user_schema import Create_User, Return_User, Return_User_With_Pwd
-
+from tasty_recipe_network.config import ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="user/token")
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 router = APIRouter()
 
 SECRET_KEY = os.getenv("SECRET_KEY")
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+ALGORITHM = ALGORITHM
+ACCESS_TOKEN_EXPIRE_MINUTES = int(ACCESS_TOKEN_EXPIRE_MINUTES)
 
 
 class Token(BaseModel):
