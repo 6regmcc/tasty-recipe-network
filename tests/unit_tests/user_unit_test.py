@@ -6,7 +6,7 @@ import jwt
 from tasty_recipe_network.routes.user_auth_routes import pwd_context, verify_password, get_password_hash, authenticate_user, \
     create_access_token
 from tasty_recipe_network.schemas.user_schema import Return_User_With_Pwd
-
+from tasty_recipe_network.config import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM
 
 def mock_output(return_value=None):
     return lambda *args, **kwargs: return_value
@@ -64,9 +64,9 @@ def test_get_password_hash():
 def test_create_access_token():
     data = {"sub": "tom@email.com"}
     token = create_access_token(data=data,
-                                expires_delta=timedelta(minutes=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))))
+                                expires_delta=timedelta(minutes=int(ACCESS_TOKEN_EXPIRE_MINUTES)))
     assert token
-    payload = jwt.decode(token, os.getenv("SECRET_KEY"), algorithms=[os.getenv("ALGORITHM")])
+    payload = jwt.decode(token, os.getenv("SECRET_KEY"), algorithms=[ALGORITHM])
     username: str = payload.get("sub")
     assert username == data["sub"]
 

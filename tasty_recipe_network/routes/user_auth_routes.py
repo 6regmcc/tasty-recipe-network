@@ -59,7 +59,7 @@ def create_user(create_user_data: Create_User,
         new_user = db_create_user(create_user_data=create_user_data, db=db)
         return new_user
     except IntegrityError as e:
-        if e.orig.pgcode == "23505":
+        if e.orig.sqlstate == "23505":
             raise HTTPException(status_code=400, detail="Username already exists")
         else:
             raise HTTPException(status_code=400, detail=e.orig.args)

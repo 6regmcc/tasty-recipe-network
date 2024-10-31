@@ -96,7 +96,7 @@ def test_get_ingredients(create_recipe_with_ingredients, db_session):
 
 
 def test_get_ingredients_failure(db_session):
-    recipe_id = 999999999999999999
+    recipe_id = -1
     with pytest.raises(sqlalchemy.exc.NoResultFound):
         found_ingredients = db_get_ingredients(recipe_id, db_session)
 
@@ -109,7 +109,7 @@ def test_get_recipe(create_recipe_with_ingredients, db_session):
 
 
 def test_get_recipe_failure(db_session):
-    recipe_id = 999999999999999999
+    recipe_id = 11
     with pytest.raises(sqlalchemy.exc.NoResultFound):
         found_recipe = db_get_recipe(recipe_id=recipe_id, db=db_session)
 
@@ -121,7 +121,7 @@ def test_get_ingredient(create_recipe_with_ingredients, db_session):
 
 
 def test_get_ingredient_not_found(db_session):
-    ingredient_id = 9999999999999
+    ingredient_id = -1
     with pytest.raises(sqlalchemy.exc.NoResultFound):
         found_ingredient = db_get_ingredient(ingredient_id=ingredient_id, db=db_session)
 
@@ -136,7 +136,7 @@ def test_get_recipe_with_ingredients(create_recipe_with_ingredients, db_session)
 
 
 def test_get_recipe_with_ingredients_not_found(db_session):
-    recipe_id = 9999999999
+    recipe_id = -1
     with pytest.raises(sqlalchemy.exc.NoResultFound):
         found_recipe = db_get_recipe_with_ingredients(recipe_id=recipe_id, db=db_session)
 
@@ -187,7 +187,7 @@ def test_edit_ingredient(create_recipe_with_ingredients, db_session):
 
 
 def test_edit_ingredient_failure(db_session):
-    ingredient_id = 999999999999
+    ingredient_id = -1
     ingredient_update_data = Create_Ingredient(
         amount=999,
         unit="lb",

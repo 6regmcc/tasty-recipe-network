@@ -12,9 +12,11 @@ from tasty_recipe_network.models.recipe_models import Recipe
 from tasty_recipe_network.models.user_models import User_Auth, User_Details
 from tasty_recipe_network.schemas.recipe_schema import Create_Ingredient, Create_Recipe
 from tasty_recipe_network.db.db_recipes import db_create_recipe_with_ingredients
+from tasty_recipe_network.config import ACCESS_TOKEN_EXPIRE_MINUTES, TEST_DATABASE_URL
 
-TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL")
-ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
+
+#TEST_DATABASE_URL = "postgresql+psycopg://postgres:postgres@localhost/tasty_test_db"
+ACCESS_TOKEN_EXPIRE_MINUTES = ACCESS_TOKEN_EXPIRE_MINUTES
 engine = create_engine(TEST_DATABASE_URL)
 
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -23,7 +25,7 @@ TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engin
 Base.metadata.create_all(bind=engine)
 
 
-# Base.metadata.drop_all(bind=engine)
+#Base.metadata.drop_all(bind=engine)
 
 @pytest.fixture(scope="function")
 def db_session():

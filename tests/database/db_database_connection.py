@@ -1,4 +1,4 @@
-import os
+"""import os
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
@@ -22,3 +22,4 @@ def db_create_all():
 
 def db_drop_all():
     Base.metadata.drop_all(bind=engine)
+"""

@@ -72,7 +72,7 @@ def test_get_recipe_by_id(test_client, db_session, authorised_user, recipe_one):
 
 
 def test_get_recipe_by_id_failure(test_client, db_session):
-    response = test_client.get(f"recipies/recipe/99999999999")
+    response = test_client.get(f"recipies/recipe/11")
     recipie = response.json()
     assert response.status_code == 404
     assert recipie["detail"] == "No recipie found"

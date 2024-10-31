@@ -25,7 +25,7 @@ def test_get_user_details_by_id_success(create_user_fixture, db_session):
 
 def test_get_user_details_by_id_failure(db_session):
     with pytest.raises(sqlalchemy.exc.NoResultFound):
-        db_get_user_details_by_id(user_auth_id=9999999999, db=db_session)
+        db_get_user_details_by_id(user_auth_id=-1, db=db_session)
 
 
 def test_db_create_user(db_session):

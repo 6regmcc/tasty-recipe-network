@@ -15,6 +15,9 @@ pyjwt = "^2.9.0"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 
 
+[tool.poetry.group.dev.dependencies]
+pytest-mock = "^3.14.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
