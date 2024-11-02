@@ -1,10 +1,12 @@
-# fly.toml app configuration file generated for tasty-recipe-network on 2024-11-02T18:38:17Z
+# fly.toml app configuration file generated for tasty-recipe-network on 2024-11-02T18:32:18Z
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
 app = 'tasty-recipe-network'
 primary_region = 'cdg'
+
+[build]
 
 [http_service]
   internal_port = 3000
