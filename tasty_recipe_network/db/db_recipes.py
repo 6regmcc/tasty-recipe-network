@@ -5,7 +5,13 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from tasty_recipe_network.models.recipe_models import Recipe, Ingredient
-from tasty_recipe_network.schemas.recipe_schema import CreateRecipe, ReturnRecipe, CreateIngredient, ReturnIngredient, UpdateRecipe
+from tasty_recipe_network.schemas.recipe_schema import (
+    CreateRecipe,
+    ReturnRecipe,
+    CreateIngredient,
+    ReturnIngredient,
+    UpdateRecipe,
+)
 
 
 def db_get_recipe(recipe_id: int, db: Session) -> Recipe:
@@ -24,7 +30,8 @@ def db_get_ingredient(ingredient_id: int, db: Session) -> Ingredient:
 
 def db_get_ingredients(recipe_id: int, db: Session) -> Sequence[Ingredient]:
     found_ingredients: Sequence[Ingredient] = db.scalars(
-        select(Ingredient).where(Ingredient.recipe_id == recipe_id)).all()
+        select(Ingredient).where(Ingredient.recipe_id == recipe_id)
+    ).all()
     if not found_ingredients:
         raise sqlalchemy.exc.NoResultFound
     return found_ingredients
@@ -32,13 +39,17 @@ def db_get_ingredients(recipe_id: int, db: Session) -> Sequence[Ingredient]:
 
 def db_get_recipe_with_ingredients(recipe_id: int, db: Session) -> ReturnRecipe:
     recipe = db.scalars(select(Recipe).where(Recipe.recipe_id == recipe_id)).one()
-    return_recipe = ReturnRecipe(**recipe.to_dict(),
-                                 ingredients=[ingredient.to_dict() for ingredient in recipe.ingredients])
+    return_recipe = ReturnRecipe(
+        **recipe.to_dict(),
+        ingredients=[ingredient.to_dict() for ingredient in recipe.ingredients],
+    )
     return return_recipe
 
 
 def db_get_recipe_id_from_ingredient_id(ingredient_id: int, db: Session) -> int:
-    found_ingredient = db.query(Ingredient).filter(Ingredient.ingredient_id == ingredient_id).one()
+    found_ingredient = (
+        db.query(Ingredient).filter(Ingredient.ingredient_id == ingredient_id).one()
+    )
     return found_ingredient.recipe_id
 
 
@@ -50,10 +61,17 @@ def db_edit_recipe(recipe: UpdateRecipe, recipe_id: int, db: Session):
         setattr(recipe_to_update, key, value)
     db.commit()
     ingredients = db_get_ingredients(recipe_id=recipe_id, db=db)
-    return ReturnRecipe(**recipe_to_update.to_dict(), ingredients=[ReturnIngredient(**ingredient.to_dict()) for ingredient in ingredients])
+    return ReturnRecipe(
+        **recipe_to_update.to_dict(),
+        ingredients=[
+            ReturnIngredient(**ingredient.to_dict()) for ingredient in ingredients
+        ],
+    )
 
 
-def db_edit_ingredient(ingredient: CreateIngredient, ingredient_id: int, db: Session) -> Ingredient:
+def db_edit_ingredient(
+    ingredient: CreateIngredient, ingredient_id: int, db: Session
+) -> Ingredient:
     ingredient_to_update = db.get(Ingredient, ingredient_id)
     if not ingredient_to_update:
         raise sqlalchemy.exc.NoResultFound
@@ -64,7 +82,9 @@ def db_edit_ingredient(ingredient: CreateIngredient, ingredient_id: int, db: Ses
     return ingredient_to_update
 
 
-def add_ingredient_to_recipe(new_ingredient: CreateIngredient, recipe_id: int, db: Session) -> Ingredient:
+def add_ingredient_to_recipe(
+    new_ingredient: CreateIngredient, recipe_id: int, db: Session
+) -> Ingredient:
     ingredient_to_add = Ingredient(**new_ingredient.model_dump(), recipe_id=recipe_id)
     try:
         db.add(ingredient_to_add)
@@ -77,7 +97,9 @@ def add_ingredient_to_recipe(new_ingredient: CreateIngredient, recipe_id: int, d
 
 
 def delete_ingredient(ingredient_id: int, db: Session):
-    ingredient_to_delete = db.query(Ingredient).filter(Ingredient.ingredient_id == ingredient_id).delete()
+    ingredient_to_delete = (
+        db.query(Ingredient).filter(Ingredient.ingredient_id == ingredient_id).delete()
+    )
     db.commit()
     return ingredient_to_delete
 
@@ -90,14 +112,18 @@ def delete_recipe(recipe_id: int, db: Session):
 
 
 def db_create_recipe(recipe_data: CreateRecipe, user_id: int, db: Session):
-    new_recipe = Recipe(**recipe_data.model_dump(exclude={"ingredients"}), created_by=user_id)
+    new_recipe = Recipe(
+        **recipe_data.model_dump(exclude={"ingredients"}), created_by=user_id
+    )
     db.add(new_recipe)
     db.commit()
     db.refresh(new_recipe)
     return new_recipe
 
 
-def db_create_recipe_ingredients(ingredients: list[CreateIngredient], recipe_id: int, db: Session):
+def db_create_recipe_ingredients(
+    ingredients: list[CreateIngredient], recipe_id: int, db: Session
+):
     add_ingredients = []
     for ingredient in ingredients:
         new_ingredient = Ingredient(**ingredient.model_dump(), recipe_id=recipe_id)
@@ -109,7 +135,9 @@ def db_create_recipe_ingredients(ingredients: list[CreateIngredient], recipe_id:
     return add_ingredients
 
 
-def db_create_recipe_with_ingredients(recipe_data: CreateRecipe, user_id: int, db: Session):
+def db_create_recipe_with_ingredients(
+    recipe_data: CreateRecipe, user_id: int, db: Session
+):
     new_recipe = None
     new_ingredients = None
     try:
@@ -118,23 +146,33 @@ def db_create_recipe_with_ingredients(recipe_data: CreateRecipe, user_id: int, d
         raise e
 
     try:
-        new_ingredients = db_create_recipe_ingredients(ingredients=recipe_data.ingredients,
-                                                       recipe_id=new_recipe.recipe_id, db=db)
+        new_ingredients = db_create_recipe_ingredients(
+            ingredients=recipe_data.ingredients, recipe_id=new_recipe.recipe_id, db=db
+        )
     except Exception as e:
         db.delete(new_recipe)
         db.commit()
         raise e
-    created_recipe = ReturnRecipe(**new_recipe.to_dict(),
-                                  ingredients=[ReturnIngredient(**ingredient.to_dict()) for ingredient in
-                                                new_ingredients])
+    created_recipe = ReturnRecipe(
+        **new_recipe.to_dict(),
+        ingredients=[
+            ReturnIngredient(**ingredient.to_dict()) for ingredient in new_ingredients
+        ],
+    )
     return created_recipe
 
 
 def db_get_users_recipies(user_id: int, db: Session):
-    found_recipies = db.scalars(select(Recipe).where(Recipe.created_by == user_id)).all()
+    found_recipies = db.scalars(
+        select(Recipe).where(Recipe.created_by == user_id)
+    ).all()
     return_recipies = [
-        ReturnRecipe(**recipe.to_dict(), ingredients=[ingredient.to_dict() for ingredient in recipe.ingredients]) for
-        recipe in found_recipies]
+        ReturnRecipe(
+            **recipe.to_dict(),
+            ingredients=[ingredient.to_dict() for ingredient in recipe.ingredients],
+        )
+        for recipe in found_recipies
+    ]
 
     return return_recipies
 
@@ -142,15 +180,22 @@ def db_get_users_recipies(user_id: int, db: Session):
 def db_get_all_recipies(db: Session) -> list[ReturnRecipe]:
     found_recipies = db.scalars(select(Recipe)).all()
     return_recipies = [
-        ReturnRecipe(**recipe.to_dict(), ingredients=[ingredient.to_dict() for ingredient in recipe.ingredients]) for
-        recipe in found_recipies]
+        ReturnRecipe(
+            **recipe.to_dict(),
+            ingredients=[ingredient.to_dict() for ingredient in recipe.ingredients],
+        )
+        for recipe in found_recipies
+    ]
 
     return return_recipies
 
 
 def db_check_if_user_owns_recipe(recipe_id: int, user_id: int, db: Session):
-    recipe = db.scalars(select(Recipe).filter(Recipe.created_by == user_id and Recipe.recipe_id == recipe_id)).first()
+    recipe = db.scalars(
+        select(Recipe).filter(
+            Recipe.created_by == user_id and Recipe.recipe_id == recipe_id
+        )
+    ).first()
     if not recipe:
         raise sqlalchemy.exc.NoResultFound
     return True
-

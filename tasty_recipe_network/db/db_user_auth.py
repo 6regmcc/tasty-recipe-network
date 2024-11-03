@@ -2,13 +2,16 @@ import sqlalchemy
 from sqlalchemy.orm import Session
 
 from tasty_recipe_network.models.user_models import User_Auth, User_Details
-from tasty_recipe_network.schemas.user_schema import Create_User, Return_User, Return_User_With_Pwd
+from tasty_recipe_network.schemas.user_schema import (
+    Create_User,
+    Return_User,
+    Return_User_With_Pwd,
+)
 
 
 def db_create_user(create_user_data: Create_User, db: Session):
     new_auth_user = User_Auth(
-        username=create_user_data.username,
-        password=create_user_data.password
+        username=create_user_data.username, password=create_user_data.password
     )
     db.add(new_auth_user)
     db.commit()
@@ -17,7 +20,7 @@ def db_create_user(create_user_data: Create_User, db: Session):
     new_user_details = User_Details(
         first_name=create_user_data.first_name,
         last_name=create_user_data.last_name,
-        user_auth_id=new_auth_user.user_id
+        user_auth_id=new_auth_user.user_id,
     )
     db.add(new_user_details)
     db.commit()
@@ -25,7 +28,7 @@ def db_create_user(create_user_data: Create_User, db: Session):
 
 
 def db_get_user_by_username(username: str, db: Session):
-    print('this function was called')
+    print("this function was called")
     try:
         auth_user = db.query(User_Auth).filter(User_Auth.username == username).one()
     except sqlalchemy.exc.NoResultFound:
@@ -41,7 +44,11 @@ def db_get_user_by_username(username: str, db: Session):
 
 def db_get_user_details_by_id(user_auth_id: int, db: Session):
     try:
-        user_details = db.query(User_Details).filter(User_Details.user_auth_id == user_auth_id).one()
+        user_details = (
+            db.query(User_Details)
+            .filter(User_Details.user_auth_id == user_auth_id)
+            .one()
+        )
     except sqlalchemy.exc.NoResultFound:
         raise
     return user_details

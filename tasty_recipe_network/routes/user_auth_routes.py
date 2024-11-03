@@ -17,8 +17,13 @@ from starlette import status
 
 from tasty_recipe_network.db.db_connection import get_db
 from tasty_recipe_network.db.db_user_auth import db_create_user, db_get_user_by_username
-from tasty_recipe_network.schemas.user_schema import Create_User, Return_User, Return_User_With_Pwd
+from tasty_recipe_network.schemas.user_schema import (
+    Create_User,
+    Return_User,
+    Return_User_With_Pwd,
+)
 from tasty_recipe_network.config import ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="user/token")
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -26,7 +31,6 @@ router = APIRouter()
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 ALGORITHM = ALGORITHM
-
 
 
 class Token(BaseModel):
@@ -38,21 +42,22 @@ class TokenData(BaseModel):
     username: str | None = None
 
 
-def authenticate_user(username: str, password: str, db: Session) -> Return_User_With_Pwd | None:
+def authenticate_user(
+    username: str, password: str, db: Session
+) -> Return_User_With_Pwd | None:
     try:
         user = db_get_user_by_username(username=username, db=db)
     except sqlalchemy.exc.NoResultFound:
-        print('that')
+        print("that")
         return None
     if not verify_password(password, user.password):
-        print('this')
+        print("this")
         return None
     return user
 
 
 @router.post("/create_user", response_model=Return_User)
-def create_user(create_user_data: Create_User,
-                db: Annotated[Session, Depends(get_db)]):
+def create_user(create_user_data: Create_User, db: Annotated[Session, Depends(get_db)]):
     hashed_password = get_password_hash(create_user_data.password)
     create_user_data.password = hashed_password
     try:
@@ -62,12 +67,14 @@ def create_user(create_user_data: Create_User,
         raise HTTPException(status_code=400, detail="Username already exists")
 
 
-
 @router.post("/token")
 async def login(
-        form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Annotated[Session, Depends(get_db)]
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    db: Annotated[Session, Depends(get_db)],
 ) -> Token:
-    user = authenticate_user(username=form_data.username, password=form_data.password, db=db)
+    user = authenticate_user(
+        username=form_data.username, password=form_data.password, db=db
+    )
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -125,13 +132,18 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Session)
             raise credentials_exception
     except InvalidTokenError:
         raise credentials_exception
-    user : Return_User_With_Pwd | None  = db_get_user_by_username(username=token_data.username, db=db)
+    user: Return_User_With_Pwd | None = db_get_user_by_username(
+        username=token_data.username, db=db
+    )
     if user is None:
         raise credentials_exception
     return user
 
 
 @router.get("/me", response_model=Return_User)
-async def read_users_me(token: Annotated[str, Depends(oauth2_scheme)], db: Annotated[Session, Depends(get_db)]):
+async def read_users_me(
+    token: Annotated[str, Depends(oauth2_scheme)],
+    db: Annotated[Session, Depends(get_db)],
+):
     user = get_current_user(token=token, db=db)
     return user

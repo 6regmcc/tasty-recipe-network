@@ -13,7 +13,7 @@ class Return_User(BaseModel):
     username: str  # add email validation
     first_name: str | None = None
     last_name: str | None = None
-    #user_details_id: int
+    # user_details_id: int
     verified: bool | None = None
 
 

@@ -14,14 +14,12 @@ def test_create_recipe(test_client, create_user_fixture, authorised_user):
                 "amount": 0,
                 "unit": "string",
                 "notes": "string",
-                "is_metric": True
+                "is_metric": True,
             }
-        ]
+        ],
     }
 
-    headers = {
-        'Authorization': f'Bearer {authorised_user["token"]}'
-    }
+    headers = {"Authorization": f'Bearer {authorised_user["token"]}'}
 
     response = test_client.post("/recipies/create_recipe", json=body, headers=headers)
     assert response.status_code == 200
@@ -31,16 +29,21 @@ def test_create_recipe(test_client, create_user_fixture, authorised_user):
     assert len(recipe["ingredients"]) == 1
 
 
-def test_get_users_recipes(test_client, db_session, authorised_user, recipe_one, recipe_two, recipe_three):
+def test_get_users_recipes(
+    test_client, db_session, authorised_user, recipe_one, recipe_two, recipe_three
+):
     user_1 = authorised_user
-    db_create_recipe_with_ingredients(recipe_data=recipe_one, user_id=user_1["user_id"], db=db_session)
-    db_create_recipe_with_ingredients(recipe_data=recipe_two, user_id=user_1["user_id"], db=db_session)
-    db_create_recipe_with_ingredients(recipe_data=recipe_three, user_id=user_1["user_id"], db=db_session)
+    db_create_recipe_with_ingredients(
+        recipe_data=recipe_one, user_id=user_1["user_id"], db=db_session
+    )
+    db_create_recipe_with_ingredients(
+        recipe_data=recipe_two, user_id=user_1["user_id"], db=db_session
+    )
+    db_create_recipe_with_ingredients(
+        recipe_data=recipe_three, user_id=user_1["user_id"], db=db_session
+    )
 
-    headers = {
-        'Authorization': f'Bearer {user_1["token"]}'
-    }
-
+    headers = {"Authorization": f'Bearer {user_1["token"]}'}
 
     response = test_client.get("recipies/user_recipies", headers=headers)
     assert response.status_code == 200
@@ -52,9 +55,7 @@ def test_get_users_recipes(test_client, db_session, authorised_user, recipe_one,
 
 def test_get_users_recipes_failure(test_client, authorised_user, db_session):
     user_1 = authorised_user
-    headers = {
-        'Authorization': f'Bearer {user_1["token"]}'
-    }
+    headers = {"Authorization": f'Bearer {user_1["token"]}'}
     response = test_client.get("recipies/user_recipies", headers=headers)
     assert response.status_code == 404
     recipies = response.json()
@@ -63,7 +64,9 @@ def test_get_users_recipes_failure(test_client, authorised_user, db_session):
 
 def test_get_recipe_by_id(test_client, db_session, authorised_user, recipe_one):
     user_1 = authorised_user
-    recipe_id = db_create_recipe_with_ingredients(recipe_data=recipe_one, user_id=user_1["user_id"], db=db_session).recipe_id
+    recipe_id = db_create_recipe_with_ingredients(
+        recipe_data=recipe_one, user_id=user_1["user_id"], db=db_session
+    ).recipe_id
     response = test_client.get(f"recipies/recipe/{recipe_id}")
     recipe = response.json()
     assert response.status_code == 200
@@ -78,16 +81,33 @@ def test_get_recipe_by_id_failure(test_client, db_session):
     assert recipie["detail"] == "No recipie found"
 
 
-def test_get_all_recipies(test_client, create_user_fixture, create_user2_fixture, recipe_one, recipe_two, recipe_three,
-                            db_session):
+def test_get_all_recipies(
+    test_client,
+    create_user_fixture,
+    create_user2_fixture,
+    recipe_one,
+    recipe_two,
+    recipe_three,
+    db_session,
+):
     user_1 = create_user_fixture
     user_2 = create_user2_fixture
 
-    recipe1 = db_create_recipe_with_ingredients(recipe_data=recipe_one, user_id=user_1["user_id"], db=db_session)
-    recipe2 = db_create_recipe_with_ingredients(recipe_data=recipe_two, user_id=user_1["user_id"], db=db_session)
-    recipe3 = db_create_recipe_with_ingredients(recipe_data=recipe_three, user_id=user_1["user_id"], db=db_session)
-    recipe4 = db_create_recipe_with_ingredients(recipe_data=recipe_one, user_id=user_2["user_id"], db=db_session)
-    recipe5 = db_create_recipe_with_ingredients(recipe_data=recipe_two, user_id=user_2["user_id"], db=db_session)
+    recipe1 = db_create_recipe_with_ingredients(
+        recipe_data=recipe_one, user_id=user_1["user_id"], db=db_session
+    )
+    recipe2 = db_create_recipe_with_ingredients(
+        recipe_data=recipe_two, user_id=user_1["user_id"], db=db_session
+    )
+    recipe3 = db_create_recipe_with_ingredients(
+        recipe_data=recipe_three, user_id=user_1["user_id"], db=db_session
+    )
+    recipe4 = db_create_recipe_with_ingredients(
+        recipe_data=recipe_one, user_id=user_2["user_id"], db=db_session
+    )
+    recipe5 = db_create_recipe_with_ingredients(
+        recipe_data=recipe_two, user_id=user_2["user_id"], db=db_session
+    )
 
     response = test_client.get("recipies/all")
     recipies = response.json()
@@ -107,20 +127,21 @@ def test_get_all_recipies(test_client, create_user_fixture, create_user2_fixture
 def test_update_recipe(test_client, authorised_user, recipe_one, db_session):
     user = authorised_user["user_id"]
 
-    headers = {
-        'Authorization': f'Bearer {authorised_user["token"]}'
-    }
-    new_recipe = db_create_recipe_with_ingredients(recipe_data=recipe_one, user_id=user, db=db_session)
+    headers = {"Authorization": f'Bearer {authorised_user["token"]}'}
+    new_recipe = db_create_recipe_with_ingredients(
+        recipe_data=recipe_one, user_id=user, db=db_session
+    )
     recipe_update_data = {
-
-            "title": "update_title",
-            "is_vegan": True,
-            "is_vegetarian": False,
-            "body": "updated body",
-
-
+        "title": "update_title",
+        "is_vegan": True,
+        "is_vegetarian": False,
+        "body": "updated body",
     }
-    response = test_client.put(f"recipies/update_recipe/{new_recipe.recipe_id}", json=recipe_update_data, headers=headers)
+    response = test_client.put(
+        f"recipies/update_recipe/{new_recipe.recipe_id}",
+        json=recipe_update_data,
+        headers=headers,
+    )
     updated_recipe = response.json()
     assert response.status_code == 200
     assert updated_recipe["title"] == recipe_update_data["title"]

@@ -6,20 +6,27 @@ from sqlalchemy.orm import Session
 
 from tasty_recipe_network.routes.user_auth_routes import oauth2_scheme, get_current_user
 from tasty_recipe_network.db.db_connection import get_db
-from tasty_recipe_network.db.db_recipes import db_create_recipe_with_ingredients, db_get_users_recipies, db_get_recipe_with_ingredients, \
-    db_get_all_recipies, db_check_if_user_owns_recipe, db_edit_recipe
-from tasty_recipe_network.schemas.recipe_schema import CreateRecipe, UpdateRecipe, ReturnRecipe
+from tasty_recipe_network.db.db_recipes import (
+    db_create_recipe_with_ingredients,
+    db_get_users_recipies,
+    db_get_recipe_with_ingredients,
+    db_get_all_recipies,
+    db_check_if_user_owns_recipe,
+    db_edit_recipe,
+)
+from tasty_recipe_network.schemas.recipe_schema import (
+    CreateRecipe,
+    UpdateRecipe,
+    ReturnRecipe,
+)
 
 recipe_router = APIRouter(
-    prefix="/recipies",
-    tags=["Recipies"],
-    dependencies=[Depends(oauth2_scheme)]
+    prefix="/recipies", tags=["Recipies"], dependencies=[Depends(oauth2_scheme)]
 )
 
 recipe_router_no_auth = APIRouter(
     prefix="/recipies",
     tags=["Recipies"],
-
 )
 
 
@@ -37,7 +44,10 @@ def get_all_recipies(db: Annotated[Session, Depends(get_db)]):
 
 
 @recipe_router.get("/user_recipies", response_model=list[ReturnRecipe])
-def get_users_recipies(db: Annotated[Session, Depends(get_db)], token: Annotated[str, Depends(oauth2_scheme)]):
+def get_users_recipies(
+    db: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+):
     user_id = get_current_user(token=token, db=db).user_id
     users_recipies = db_get_users_recipies(user_id=user_id, db=db)
     if not users_recipies:
@@ -46,18 +56,28 @@ def get_users_recipies(db: Annotated[Session, Depends(get_db)], token: Annotated
 
 
 @recipe_router.post("/create_recipe", response_model=ReturnRecipe)
-def create_recipe(recipe_data: CreateRecipe, db: Annotated[Session, Depends(get_db)],
-                  token: Annotated[str, Depends(oauth2_scheme)]):
+def create_recipe(
+    recipe_data: CreateRecipe,
+    db: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+):
     user_id = get_current_user(token=token, db=db).user_id
     try:
-        new_recipe = db_create_recipe_with_ingredients(recipe_data=recipe_data, user_id=user_id, db=db)
+        new_recipe = db_create_recipe_with_ingredients(
+            recipe_data=recipe_data, user_id=user_id, db=db
+        )
     except Exception as e:
         raise e
     return new_recipe
 
 
 @recipe_router.put("/update_recipe/{recipe_id}", response_model=ReturnRecipe)
-def update_recipe(recipe_id: int, recipe_data: UpdateRecipe, db: Annotated[Session, Depends(get_db)], token: Annotated[str, Depends(oauth2_scheme)]):
+def update_recipe(
+    recipe_id: int,
+    recipe_data: UpdateRecipe,
+    db: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+):
     user_id = get_current_user(token=token, db=db).user_id
 
     try:
@@ -71,4 +91,3 @@ def update_recipe(recipe_id: int, recipe_data: UpdateRecipe, db: Annotated[Sessi
             raise HTTPException(status_code=500, detail=f"{e.args[0]}")
         else:
             raise HTTPException(status_code=500, detail="Server Error")
-

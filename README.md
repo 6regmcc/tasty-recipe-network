@@ -8,16 +8,16 @@ http://localhost:3000/docs
 
 
 
-to do 
-add date modified and date created 
-encode user_id in token 
+to do
+add date modified and date created
+encode user_id in token
 make username unique
 
 
 
 
-create_recipie 
-delete_recipie 
+create_recipie
+delete_recipie
 edit_recipe
 get_recipe
 
@@ -25,5 +25,3 @@ get_recipe
 edit_ingredients
 delete_ingredient
 add_ingredient
-
-

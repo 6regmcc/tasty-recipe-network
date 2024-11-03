@@ -1,5 +1,3 @@
-
-
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -15,8 +13,6 @@ from tasty_recipe_network.db.db_recipes import db_create_recipe_with_ingredients
 from tasty_recipe_network.config import ACCESS_TOKEN_EXPIRE_MINUTES, TEST_DATABASE_URL
 
 
-
-
 ACCESS_TOKEN_EXPIRE_MINUTES = ACCESS_TOKEN_EXPIRE_MINUTES
 engine = create_engine(TEST_DATABASE_URL)
 
@@ -26,7 +22,8 @@ TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engin
 Base.metadata.create_all(bind=engine)
 
 
-#Base.metadata.drop_all(bind=engine)
+# Base.metadata.drop_all(bind=engine)
+
 
 @pytest.fixture(scope="function")
 def db_session():
@@ -58,15 +55,12 @@ def create_user_fixture(db_session):
     new_user = User_Auth(
         username="tom4@gmail.com",
         password=get_password_hash("Password1"),
-
     )
     db_session.add(new_user)
     db_session.commit()
     db_session.refresh(new_user)
     new_user_details = User_Details(
-        first_name="Tom",
-        last_name="Smith",
-        user_auth_id=new_user.user_id
+        first_name="Tom", last_name="Smith", user_auth_id=new_user.user_id
     )
     db_session.add(new_user_details)
     db_session.commit()
@@ -78,19 +72,12 @@ def create_user_fixture(db_session):
 @pytest.fixture(scope="function")
 def authorised_user(create_user_fixture, test_client):
     new_user = create_user_fixture
-    body = {
-        "username": new_user["username"],
-        "password": 'Password1'
-
-    }
+    body = {"username": new_user["username"], "password": "Password1"}
     response = test_client.post("user/token", data=body)
     data = response.json()
 
     token = data["access_token"]
-    user_data = {
-        "user_id": new_user["user_id"],
-        "token": token
-    }
+    user_data = {"user_id": new_user["user_id"], "token": token}
     return user_data
 
 
@@ -113,7 +100,8 @@ Bake in the preheated oven until an instant read thermometer inserted near the c
 
 Remove meatballs from the oven, and spoon tomato sauce evenly over meatballs. Sprinkle first with Monterey Jack cheese, and then with Parmigiano-Reggiano.
 
-Return meatballs to the oven, and bake until sauce is hot and cheese is melted, 5 to 10 minutes more. Top with parsley and serve.""")
+Return meatballs to the oven, and bake until sauce is hot and cheese is melted, 5 to 10 minutes more. Top with parsley and serve.""",
+    )
 
     db_session.add(new_recipe)
     db_session.commit()
@@ -126,7 +114,9 @@ Return meatballs to the oven, and bake until sauce is hot and cheese is melted, 
 def create_recipe_with_ingredients(recipe_one, create_user_fixture, db_session):
     new_recipe = recipe_one
     user_id = create_user_fixture["user_id"]
-    created_recipe = db_create_recipe_with_ingredients(recipe_data=new_recipe, user_id=user_id, db=db_session)
+    created_recipe = db_create_recipe_with_ingredients(
+        recipe_data=new_recipe, user_id=user_id, db=db_session
+    )
     return created_recipe
 
 
@@ -138,35 +128,30 @@ def return_ingredients(create_recipe):
             "ingredient_name": "large slices stale white bread",
             "notes": "crusts removed",
             "is_metric": False,
-
         },
         {
             "amount": 0.5,
             "unit": "cups",
             "ingredient_name": "milk",
             "is_metric": False,
-
         },
         {
             "amount": 1,
             "unit": "lb",
             "ingredient_name": "ground beef",
             "is_metric": False,
-
         },
         {
             "amount": 1,
             "unit": "lb",
             "ingredient_name": "ground pork",
             "is_metric": False,
-
         },
         {
             "amount": 2.5,
             "unit": "teaspoon",
             "ingredient_name": "kosher salt",
             "is_metric": False,
-
         },
         {
             "amount": 1,
@@ -174,42 +159,36 @@ def return_ingredients(create_recipe):
             "ingredient_name": "black pepper",
             "notes": "freshly ground",
             "is_metric": False,
-
         },
         {
             "amount": 0.25,
             "unit": "teaspoon",
             "ingredient_name": "dried oregano",
             "is_metric": False,
-
         },
         {
             "amount": 1,
             "unit": "teaspoon",
             "ingredient_name": " onion powder",
             "is_metric": False,
-
         },
         {
             "amount": 1,
             "unit": "teaspoon",
             "ingredient_name": "garlic powder",
             "is_metric": False,
-
         },
         {
             "amount": 1,
             "unit": "pinch",
             "ingredient_name": "cayenne pepper",
             "is_metric": False,
-
         },
         {
             "amount": 1,
             "unit": "tablespoon",
             "ingredient_name": "olive oil",
             "is_metric": False,
-
         },
         {
             "amount": 0.25,
@@ -217,7 +196,6 @@ def return_ingredients(create_recipe):
             "ingredient_name": "Parmigiano-Reggiano",
             "notes": "freshly grated",
             "is_metric": False,
-
         },
         {
             "amount": 0.333,
@@ -225,25 +203,23 @@ def return_ingredients(create_recipe):
             "ingredient_name": "Italian parsley",
             "notes": "chopped fresh (optional)",
             "is_metric": False,
-
         },
         {
             "amount": 1,
             "ingredient_name": "Italian parsley",
             "notes": "chopped fresh (optional)",
             "is_metric": False,
-
         },
         {
             "amount": 2,
             "ingredient_name": "large eggs",
             "notes": "lightly beaten",
             "is_metric": False,
-
-        }
-
+        },
     ]
-    ingredients_to_add: list[CreateIngredient] = [CreateIngredient(**ingredient) for ingredient in ingredients]
+    ingredients_to_add: list[CreateIngredient] = [
+        CreateIngredient(**ingredient) for ingredient in ingredients
+    ]
 
     return ingredients_to_add
 
@@ -257,7 +233,6 @@ def recipe_one():
             "ingredient_name": "kosher salt",
             "notes": "plus more to taste",
             "is_metric": False,
-
         },
         {
             "amount": 0.5,
@@ -265,7 +240,6 @@ def recipe_one():
             "ingredient_name": "black pepper",
             "notes": "freshly ground",
             "is_metric": False,
-
         },
         {
             "amount": 1,
@@ -273,15 +247,12 @@ def recipe_one():
             "ingredient_name": "black pepper",
             "notes": "freshly ground",
             "is_metric": False,
-
         },
         {
             "amount": 6,
-
             "ingredient_name": "large chicken thighs",
             "notes": "bone-in, skin-on",
             "is_metric": False,
-
         },
         {
             "amount": 1,
@@ -289,15 +260,12 @@ def recipe_one():
             "ingredient_name": "black pepper",
             "notes": "freshly ground",
             "is_metric": False,
-
         },
         {
             "amount": 1,
             "unit": "tablespoon",
             "ingredient_name": "vegetable oil",
-
             "is_metric": False,
-
         },
         {
             "amount": 0.5,
@@ -305,47 +273,36 @@ def recipe_one():
             "ingredient_name": "shallots",
             "notes": "diced",
             "is_metric": False,
-
         },
         {
             "amount": 3,
-
             "ingredient_name": "garlic cloves",
             "notes": "sliced",
             "is_metric": False,
-
         },
         {
             "amount": 1,
             "unit": "tablespoon",
             "ingredient_name": "tomato paste",
-
             "is_metric": False,
-
         },
         {
             "amount": 0.5,
             "unit": "cup",
             "ingredient_name": "wine vinegar",
-
             "is_metric": False,
-
         },
         {
             "amount": 1,
             "unit": "cup",
             "ingredient_name": "dry white wine",
-
             "is_metric": False,
-
         },
         {
             "amount": 1,
             "unit": "cup",
             "ingredient_name": "chicken broth",
-
             "is_metric": False,
-
         },
         {
             "amount": 0.25,
@@ -353,7 +310,6 @@ def recipe_one():
             "ingredient_name": "heavy cream",
             "notes": "freshly ground",
             "is_metric": False,
-
         },
         {
             "amount": 1,
@@ -361,7 +317,6 @@ def recipe_one():
             "ingredient_name": "butter",
             "notes": "cold unsalted",
             "is_metric": False,
-
         },
         {
             "amount": 1,
@@ -369,8 +324,7 @@ def recipe_one():
             "ingredient_name": "fresh tarragon",
             "notes": "freshly chopped",
             "is_metric": False,
-
-        }
+        },
     ]
     ingredients_to_add = [CreateIngredient(**ingredient) for ingredient in ingredients]
 
@@ -391,13 +345,13 @@ Drain or use a paper towel to remove excess fat in the pan, leaving 1 to 2 table
 
 Turn heat to medium, add shallots and a pinch of salt, and sauté for a few minutes, just until shallots turn translucent. Add garlic and tomato paste and cook, stirring, for another minute.
 
-Add vinegar and cook, stirring and scraping up browned bits from the bottom of the pan. Add wine and broth, raise heat to high, and bring to a simmer. Add chicken back in, skin side up, and turn off heat. 
+Add vinegar and cook, stirring and scraping up browned bits from the bottom of the pan. Add wine and broth, raise heat to high, and bring to a simmer. Add chicken back in, skin side up, and turn off heat.
 
 Bake in the preheated oven until meat is fork tender, 40 to 45 minutes. An instant read thermometer inserted near the center should read about 195 degrees F (90 degrees C).
 
-Remove thighs from pan, and turn heat to high. Boil for a few minutes, or until volume is reduced by half. Add cream and cook until sauce starts to thicken slightly, a few minutes more. 
+Remove thighs from pan, and turn heat to high. Boil for a few minutes, or until volume is reduced by half. Add cream and cook until sauce starts to thicken slightly, a few minutes more.
 
-Reduce heat to low and add butter and tarragon. Stir until butter disappears. Add chicken back to the pan, and baste with sauce for a few minutes before serving. """
+Reduce heat to low and add butter and tarragon. Stir until butter disappears. Add chicken back to the pan, and baste with sauce for a few minutes before serving. """,
     )
     return new_recipe
 
@@ -409,7 +363,6 @@ def recipe_two():
         "is_vegan": True,
         "is_vegetarian": True,
         "body": "string",
-
     }
 
     ingredients = [
@@ -418,15 +371,15 @@ def recipe_two():
             "amount": 0,
             "unit": "string",
             "notes": "string",
-            "is_metric": True
+            "is_metric": True,
         },
         {
             "ingredient_name": "recipe_2b",
             "amount": 0,
             "unit": "string",
             "notes": "string",
-            "is_metric": False
-        }
+            "is_metric": False,
+        },
     ]
 
     ingredients_to_add = [CreateIngredient(**ingredient) for ingredient in ingredients]
@@ -441,7 +394,6 @@ def recipe_three():
         "is_vegan": True,
         "is_vegetarian": False,
         "body": "string",
-
     }
     ingredients = [
         {
@@ -449,15 +401,15 @@ def recipe_three():
             "amount": 0,
             "unit": "string",
             "notes": "string",
-            "is_metric": False
+            "is_metric": False,
         },
         {
             "ingredient_name": "recipe_three_b",
             "amount": 0,
             "unit": "string",
             "notes": "string",
-            "is_metric": False
-        }
+            "is_metric": False,
+        },
     ]
     ingredients_to_add = [CreateIngredient(**ingredient) for ingredient in ingredients]
     recipe_to_add = CreateRecipe(**recipe, ingredients=ingredients_to_add)
@@ -469,20 +421,15 @@ def create_user2_fixture(db_session):
     new_user = User_Auth(
         username="tom5@gmail.com",
         password=get_password_hash("Password1"),
-
     )
     db_session.add(new_user)
     db_session.commit()
     db_session.refresh(new_user)
     new_user_details = User_Details(
-        first_name="Tom",
-        last_name="Smith",
-        user_auth_id=new_user.user_id
+        first_name="Tom", last_name="Smith", user_auth_id=new_user.user_id
     )
     db_session.add(new_user_details)
     db_session.commit()
     db_session.refresh(new_user_details)
 
     return {**new_user.to_dict(), **new_user_details.to_dict()}
-
-
