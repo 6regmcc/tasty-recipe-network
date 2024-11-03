@@ -31,15 +31,6 @@ async def root():
     return {"message": "Hello World"}
 
 
-@app.post("/create_note", response_model=Notes_Schema_response)
-def create_note(note: Notes_Schema, db: Session = Depends(get_db)):
-    new_note = Notes(
-        test_note=note.test_note
-    )
-    db.add(new_note)
-    db.commit()
-    return new_note
-
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
