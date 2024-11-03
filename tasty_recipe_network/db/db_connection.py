@@ -3,9 +3,6 @@ from typing import Generator
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker, DeclarativeBase
-from typing import TYPE_CHECKING
-# from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import declarative_base
 
 from tasty_recipe_network.config import DEV_DATABASE_URL
 

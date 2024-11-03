@@ -70,5 +70,5 @@ def update_recipe(recipe_id: int, recipe_data: UpdateRecipe, db: Annotated[Sessi
         if e.args[0]:
             raise HTTPException(status_code=500, detail=f"{e.args[0]}")
         else:
-            raise HTTPException(status_code=500, detail=f"Server Error")
+            raise HTTPException(status_code=500, detail="Server Error")
 

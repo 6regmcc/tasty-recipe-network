@@ -33,9 +33,9 @@ def test_create_recipe(test_client, create_user_fixture, authorised_user):
 
 def test_get_users_recipes(test_client, db_session, authorised_user, recipe_one, recipe_two, recipe_three):
     user_1 = authorised_user
-    recipe1 = db_create_recipe_with_ingredients(recipe_data=recipe_one, user_id=user_1["user_id"], db=db_session)
-    recipe2 = db_create_recipe_with_ingredients(recipe_data=recipe_two, user_id=user_1["user_id"], db=db_session)
-    recipe3 = db_create_recipe_with_ingredients(recipe_data=recipe_three, user_id=user_1["user_id"], db=db_session)
+    db_create_recipe_with_ingredients(recipe_data=recipe_one, user_id=user_1["user_id"], db=db_session)
+    db_create_recipe_with_ingredients(recipe_data=recipe_two, user_id=user_1["user_id"], db=db_session)
+    db_create_recipe_with_ingredients(recipe_data=recipe_three, user_id=user_1["user_id"], db=db_session)
 
     headers = {
         'Authorization': f'Bearer {user_1["token"]}'
@@ -72,7 +72,7 @@ def test_get_recipe_by_id(test_client, db_session, authorised_user, recipe_one):
 
 
 def test_get_recipe_by_id_failure(test_client, db_session):
-    response = test_client.get(f"recipies/recipe/11")
+    response = test_client.get("recipies/recipe/11")
     recipie = response.json()
     assert response.status_code == 404
     assert recipie["detail"] == "No recipie found"
@@ -106,7 +106,7 @@ def test_get_all_recipies(test_client, create_user_fixture, create_user2_fixture
 
 def test_update_recipe(test_client, authorised_user, recipe_one, db_session):
     user = authorised_user["user_id"]
-    token = authorised_user["token"]
+
     headers = {
         'Authorization': f'Bearer {authorised_user["token"]}'
     }

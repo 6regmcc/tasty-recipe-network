@@ -1,4 +1,4 @@
-import os
+
 
 import pytest
 from sqlalchemy import create_engine
@@ -16,13 +16,13 @@ from tasty_recipe_network.config import ACCESS_TOKEN_EXPIRE_MINUTES, TEST_DATABA
 
 
 
-#TEST_DATABASE_URL = "postgresql+psycopg://postgres:postgres@localhost/tasty_test_db"
+
 ACCESS_TOKEN_EXPIRE_MINUTES = ACCESS_TOKEN_EXPIRE_MINUTES
 engine = create_engine(TEST_DATABASE_URL)
 
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Create tables in the database
+
 Base.metadata.create_all(bind=engine)
 
 

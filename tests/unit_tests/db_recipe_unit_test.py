@@ -57,7 +57,7 @@ def test_delete_recipe(create_recipe_with_ingredients, db_session):
     example_ingredient_id = recipe_to_delete.ingredients[0].ingredient_id
     assert db_session.query(Recipe).filter(Recipe.recipe_id == example_recipe_id).one()
     assert db_session.query(Ingredient).filter(Ingredient.ingredient_id == example_ingredient_id).one()
-    deleted_recipe = delete_recipe(recipe_id=recipe_to_delete.recipe_id, db=db_session)
+    delete_recipe(recipe_id=recipe_to_delete.recipe_id, db=db_session)
     found_recipe = db_session.query(Recipe).filter(Recipe.recipe_id == example_recipe_id).first()
     assert found_recipe is None
     found_ingredient = db_session.query(Ingredient).filter(Ingredient.ingredient_id == example_ingredient_id).first()
@@ -98,7 +98,7 @@ def test_get_ingredients(create_recipe_with_ingredients, db_session):
 def test_get_ingredients_failure(db_session):
     recipe_id = -1
     with pytest.raises(sqlalchemy.exc.NoResultFound):
-        found_ingredients = db_get_ingredients(recipe_id, db_session)
+        db_get_ingredients(recipe_id, db_session)
 
 
 def test_get_recipe(create_recipe_with_ingredients, db_session):
@@ -111,7 +111,7 @@ def test_get_recipe(create_recipe_with_ingredients, db_session):
 def test_get_recipe_failure(db_session):
     recipe_id = 11
     with pytest.raises(sqlalchemy.exc.NoResultFound):
-        found_recipe = db_get_recipe(recipe_id=recipe_id, db=db_session)
+        db_get_recipe(recipe_id=recipe_id, db=db_session)
 
 
 def test_get_ingredient(create_recipe_with_ingredients, db_session):
@@ -123,7 +123,7 @@ def test_get_ingredient(create_recipe_with_ingredients, db_session):
 def test_get_ingredient_not_found(db_session):
     ingredient_id = -1
     with pytest.raises(sqlalchemy.exc.NoResultFound):
-        found_ingredient = db_get_ingredient(ingredient_id=ingredient_id, db=db_session)
+        db_get_ingredient(ingredient_id=ingredient_id, db=db_session)
 
 
 def test_get_recipe_with_ingredients(create_recipe_with_ingredients, db_session):
@@ -138,7 +138,7 @@ def test_get_recipe_with_ingredients(create_recipe_with_ingredients, db_session)
 def test_get_recipe_with_ingredients_not_found(db_session):
     recipe_id = -1
     with pytest.raises(sqlalchemy.exc.NoResultFound):
-        found_recipe = db_get_recipe_with_ingredients(recipe_id=recipe_id, db=db_session)
+        db_get_recipe_with_ingredients(recipe_id=recipe_id, db=db_session)
 
 
 def test_add_ingredient_to_recipe(create_recipe_with_ingredients, db_session):
@@ -164,7 +164,7 @@ def test_add_ingredient_to_recipe_failure(db_session):
         is_metric=False,
     )
     with pytest.raises(sqlalchemy.exc.IntegrityError):
-        added_ingredient = add_ingredient_to_recipe(new_ingredient=new_ingredient, recipe_id=recipe_id, db=db_session)
+        add_ingredient_to_recipe(new_ingredient=new_ingredient, recipe_id=recipe_id, db=db_session)
 
 
 def test_edit_ingredient(create_recipe_with_ingredients, db_session):
@@ -196,7 +196,7 @@ def test_edit_ingredient_failure(db_session):
     )
 
     with pytest.raises(sqlalchemy.exc.NoResultFound):
-        updated_ingredient = db_edit_ingredient(ingredient=ingredient_update_data, ingredient_id=ingredient_id,
+        db_edit_ingredient(ingredient=ingredient_update_data, ingredient_id=ingredient_id,
                                                 db=db_session)
 
 
@@ -230,18 +230,18 @@ def test_db_edit_recipe_failure(db_session):
         body="Updated Body"
     )
     with pytest.raises(sqlalchemy.exc.NoResultFound):
-        updated_recipe = db_edit_recipe(update_recipe_data, recipe_id, db_session)
+        db_edit_recipe(update_recipe_data, recipe_id, db_session)
 
 
 def test_get_all_recipies(create_user_fixture, create_user2_fixture, recipe_one, recipe_two, recipe_three, db_session):
     user_1 = create_user_fixture
     user_2 = create_user2_fixture
 
-    recipe1 = db_create_recipe_with_ingredients(recipe_data=recipe_one, user_id=user_1["user_id"], db=db_session)
-    recipe2 = db_create_recipe_with_ingredients(recipe_data=recipe_two, user_id=user_1["user_id"], db=db_session)
-    recipe3 = db_create_recipe_with_ingredients(recipe_data=recipe_three, user_id=user_1["user_id"], db=db_session)
-    recipe4 = db_create_recipe_with_ingredients(recipe_data=recipe_one, user_id=user_2["user_id"], db=db_session)
-    recipe5 = db_create_recipe_with_ingredients(recipe_data=recipe_two, user_id=user_2["user_id"], db=db_session)
+    db_create_recipe_with_ingredients(recipe_data=recipe_one, user_id=user_1["user_id"], db=db_session)
+    db_create_recipe_with_ingredients(recipe_data=recipe_two, user_id=user_1["user_id"], db=db_session)
+    db_create_recipe_with_ingredients(recipe_data=recipe_three, user_id=user_1["user_id"], db=db_session)
+    db_create_recipe_with_ingredients(recipe_data=recipe_one, user_id=user_2["user_id"], db=db_session)
+    db_create_recipe_with_ingredients(recipe_data=recipe_two, user_id=user_2["user_id"], db=db_session)
 
     recipes = db_get_all_recipies(db=db_session)
     assert len(recipes) == 5
@@ -257,11 +257,11 @@ def test_get_users_recipies(create_user_fixture, create_user2_fixture, recipe_on
     user_1 = create_user_fixture
     user_2 = create_user2_fixture
 
-    recipe1 = db_create_recipe_with_ingredients(recipe_data=recipe_one, user_id=user_1["user_id"], db=db_session)
-    recipe2 = db_create_recipe_with_ingredients(recipe_data=recipe_two, user_id=user_1["user_id"], db=db_session)
-    recipe3 = db_create_recipe_with_ingredients(recipe_data=recipe_three, user_id=user_1["user_id"], db=db_session)
-    recipe4 = db_create_recipe_with_ingredients(recipe_data=recipe_one, user_id=user_2["user_id"], db=db_session)
-    recipe5 = db_create_recipe_with_ingredients(recipe_data=recipe_two, user_id=user_2["user_id"], db=db_session)
+    db_create_recipe_with_ingredients(recipe_data=recipe_one, user_id=user_1["user_id"], db=db_session)
+    db_create_recipe_with_ingredients(recipe_data=recipe_two, user_id=user_1["user_id"], db=db_session)
+    db_create_recipe_with_ingredients(recipe_data=recipe_three, user_id=user_1["user_id"], db=db_session)
+    db_create_recipe_with_ingredients(recipe_data=recipe_one, user_id=user_2["user_id"], db=db_session)
+    db_create_recipe_with_ingredients(recipe_data=recipe_two, user_id=user_2["user_id"], db=db_session)
 
     user_1_recipies = db_get_users_recipies(user_id=user_1["user_id"], db=db_session)
     user_2_recipies = db_get_users_recipies(user_id=user_2["user_id"], db=db_session)
@@ -283,4 +283,4 @@ def test_check_if_user_owns_recipe(create_user_fixture, recipe_one, db_session):
 def test_check_if_user_owns_recipe_failure(create_user_fixture, db_session):
     user_1 = create_user_fixture
     with pytest.raises(sqlalchemy.exc.NoResultFound):
-        recipe1 = db_check_if_user_owns_recipe(recipe_id=000000000, user_id=user_1["user_id"], db=db_session)
+        db_check_if_user_owns_recipe(recipe_id=000000000, user_id=user_1["user_id"], db=db_session)

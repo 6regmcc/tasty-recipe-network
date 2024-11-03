@@ -29,7 +29,7 @@ def test_create_existing_user(test_client):
         "last_name": "Smith"
     }
 
-    response = test_client.post("/user/create_user", json=body)
+    test_client.post("/user/create_user", json=body)
     response2 = test_client.post("/user/create_user", json=body)
     assert response2.status_code == 400
     data = response2.json()
