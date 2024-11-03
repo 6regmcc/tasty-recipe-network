@@ -48,12 +48,7 @@ class Base(DeclarativeBase):
 
 
 
-# https://youtrack.jetbrains.com/issue/PY-58881
-if TYPE_CHECKING:
-    pass
-else:
-    def dataclass_sql(cls: object) -> object:
-        return cls
+
 
 
 def db_create_all():

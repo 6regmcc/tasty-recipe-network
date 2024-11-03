@@ -1095,6 +1095,17 @@ shellingham = ">=1.3.0"
 typing-extensions = ">=3.7.4.3"
 
 [[package]]
+name = "types-passlib"
+version = "1.7.7.20240819"
+description = "Typing stubs for passlib"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "types-passlib-1.7.7.20240819.tar.gz", hash = "sha256:8fc8df71623845032293d5cf7f8091f0adfeba02d387a2888684b8413f14b3d0"},
+    {file = "types_passlib-1.7.7.20240819-py3-none-any.whl", hash = "sha256:c4d299083497b66e12258c7b77c08952574213fdf7009da3135d8181a6a25f23"},
+]
+
+[[package]]
 name = "typing-extensions"
 version = "4.12.2"
 description = "Backported and Experimental Type Hints for Python 3.8+"
@@ -1385,4 +1396,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "3.13"
-content-hash = "485beb1fbfeb4903c5175e30e9c6379d0cdfb5e56fc76d1a839be1c8c326c5e1"
+content-hash = "60d1633edd0a42cd9003a749e4ef24bea0c1a6f0db7e2c00614548372bc7ef2a"

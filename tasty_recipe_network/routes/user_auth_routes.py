@@ -26,7 +26,7 @@ router = APIRouter()
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 ALGORITHM = ALGORITHM
-ACCESS_TOKEN_EXPIRE_MINUTES = int(ACCESS_TOKEN_EXPIRE_MINUTES)
+
 
 
 class Token(BaseModel):
@@ -38,15 +38,15 @@ class TokenData(BaseModel):
     username: str | None = None
 
 
-def authenticate_user(username: str, password: str, db: Session) -> Return_User_With_Pwd | bool:
+def authenticate_user(username: str, password: str, db: Session) -> Return_User_With_Pwd | None:
     try:
         user = db_get_user_by_username(username=username, db=db)
     except sqlalchemy.exc.NoResultFound:
         print('that')
-        return False
+        return None
     if not verify_password(password, user.password):
         print('this')
-        return False
+        return None
     return user
 
 
@@ -58,11 +58,9 @@ def create_user(create_user_data: Create_User,
     try:
         new_user = db_create_user(create_user_data=create_user_data, db=db)
         return new_user
-    except IntegrityError as e:
-        if e.orig.sqlstate == "23505":
-            raise HTTPException(status_code=400, detail="Username already exists")
-        else:
-            raise HTTPException(status_code=400, detail=e.orig.args)
+    except IntegrityError:
+        raise HTTPException(status_code=400, detail="Username already exists")
+
 
 
 @router.post("/token")
@@ -77,7 +75,7 @@ async def login(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(minutes=int(ACCESS_TOKEN_EXPIRE_MINUTES))
     access_token = create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
@@ -123,9 +121,11 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Session)
         if username is None:
             raise credentials_exception
         token_data = TokenData(username=username)
+        if token_data.username is None:
+            raise credentials_exception
     except InvalidTokenError:
         raise credentials_exception
-    user = db_get_user_by_username(username=token_data.username, db=db)
+    user : Return_User_With_Pwd | None  = db_get_user_by_username(username=token_data.username, db=db)
     if user is None:
         raise credentials_exception
     return user

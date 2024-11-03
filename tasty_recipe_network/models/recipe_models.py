@@ -6,10 +6,10 @@ from sqlalchemy import String
 from sqlalchemy.orm import Mapped, relationship
 from sqlalchemy.orm import mapped_column
 
-from tasty_recipe_network.db.db_connection import Base, dataclass_sql
+from tasty_recipe_network.db.db_connection import Base
 
 
-@dataclass_sql
+
 class Recipe(Base):
     __tablename__ = "recipe"
 
@@ -22,7 +22,6 @@ class Recipe(Base):
     ingredients = relationship('Ingredient', backref='recipe')
 
 
-@dataclass_sql
 class Ingredient(Base):
     __tablename__ = "ingredients"
     ingredient_id: Mapped[int] = mapped_column(primary_key=True)

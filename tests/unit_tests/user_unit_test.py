@@ -52,7 +52,7 @@ def test_authenticate_user_failure(monkeypatch, db_session):
 
     monkeypatch.setattr("tasty_recipe_network.routes.user_auth_routes.db_get_user_by_username", mock_output(returned_user))
     user = authenticate_user(username="test@email.com", password="Password2", db=db_session)
-    assert user is False
+    assert user is None
 
 
 def test_get_password_hash():
