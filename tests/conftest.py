@@ -10,7 +10,7 @@ from tasty_recipe_network.routes.user_auth_routes import get_password_hash
 from tasty_recipe_network.db.db_connection import Base, get_db
 from tasty_recipe_network.models.recipe_models import Recipe
 from tasty_recipe_network.models.user_models import User_Auth, User_Details
-from tasty_recipe_network.schemas.recipe_schema import Create_Ingredient, Create_Recipe
+from tasty_recipe_network.schemas.recipe_schema import CreateIngredient, CreateRecipe
 from tasty_recipe_network.db.db_recipes import db_create_recipe_with_ingredients
 from tasty_recipe_network.config import ACCESS_TOKEN_EXPIRE_MINUTES, TEST_DATABASE_URL
 
@@ -243,7 +243,7 @@ def return_ingredients(create_recipe):
         }
 
     ]
-    ingredients_to_add: list[Create_Ingredient] = [Create_Ingredient(**ingredient) for ingredient in ingredients]
+    ingredients_to_add: list[CreateIngredient] = [CreateIngredient(**ingredient) for ingredient in ingredients]
 
     return ingredients_to_add
 
@@ -372,9 +372,9 @@ def recipe_one():
 
         }
     ]
-    ingredients_to_add = [Create_Ingredient(**ingredient) for ingredient in ingredients]
+    ingredients_to_add = [CreateIngredient(**ingredient) for ingredient in ingredients]
 
-    new_recipe = Create_Recipe(
+    new_recipe = CreateRecipe(
         title="Poulet au Vinaigre (Chicken with Vinegar)",
         is_vegan=False,
         is_vegetarian=False,
@@ -429,8 +429,8 @@ def recipe_two():
         }
     ]
 
-    ingredients_to_add = [Create_Ingredient(**ingredient) for ingredient in ingredients]
-    recipe_to_add = Create_Recipe(**recipe, ingredients=ingredients_to_add)
+    ingredients_to_add = [CreateIngredient(**ingredient) for ingredient in ingredients]
+    recipe_to_add = CreateRecipe(**recipe, ingredients=ingredients_to_add)
     return recipe_to_add
 
 
@@ -459,8 +459,8 @@ def recipe_three():
             "is_metric": False
         }
     ]
-    ingredients_to_add = [Create_Ingredient(**ingredient) for ingredient in ingredients]
-    recipe_to_add = Create_Recipe(**recipe, ingredients=ingredients_to_add)
+    ingredients_to_add = [CreateIngredient(**ingredient) for ingredient in ingredients]
+    recipe_to_add = CreateRecipe(**recipe, ingredients=ingredients_to_add)
     return recipe_to_add
 
 

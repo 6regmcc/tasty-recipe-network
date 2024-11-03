@@ -9,7 +9,7 @@ from tasty_recipe_network.db.db_recipes import db_create_recipe_ingredients, db_
     db_get_recipe_id_from_ingredient_id, db_edit_recipe, db_get_all_recipies, \
     db_get_users_recipies, db_check_if_user_owns_recipe
 from tasty_recipe_network.models.recipe_models import Recipe, Ingredient
-from tasty_recipe_network.schemas.recipe_schema import Return_Recipe, Create_Ingredient, Update_Recipe
+from tasty_recipe_network.schemas.recipe_schema import ReturnRecipe, CreateIngredient, UpdateRecipe
 
 
 def test_create_ingredients(return_ingredients, create_recipe, db_session):
@@ -35,7 +35,7 @@ def test_create_recipe_with_ingredients(recipe_one, create_user_fixture, db_sess
     user_id = create_user_fixture["user_id"]
     created_recipe = db_create_recipe_with_ingredients(recipe_data=new_recipe, user_id=user_id, db=db_session)
     assert created_recipe
-    assert isinstance(created_recipe, Return_Recipe)
+    assert isinstance(created_recipe, ReturnRecipe)
 
 
 def test_create_recipe_with_ingredients_exception(recipe_one, create_user_fixture, db_session, mocker):
@@ -130,7 +130,7 @@ def test_get_recipe_with_ingredients(create_recipe_with_ingredients, db_session)
     new_recipe = create_recipe_with_ingredients
     recipe_id = new_recipe.recipe_id
     found_recipe = db_get_recipe_with_ingredients(recipe_id=recipe_id, db=db_session)
-    assert isinstance(found_recipe, Return_Recipe)
+    assert isinstance(found_recipe, ReturnRecipe)
     assert found_recipe.recipe_id == recipe_id
     assert len(found_recipe.ingredients) == len(new_recipe.ingredients)
 
@@ -143,7 +143,7 @@ def test_get_recipe_with_ingredients_not_found(db_session):
 
 def test_add_ingredient_to_recipe(create_recipe_with_ingredients, db_session):
     recipe_id = create_recipe_with_ingredients.recipe_id
-    new_ingredient = Create_Ingredient(
+    new_ingredient = CreateIngredient(
         amount=1,
         unit="teaspoon",
         ingredient_name="paprika",
@@ -157,7 +157,7 @@ def test_add_ingredient_to_recipe(create_recipe_with_ingredients, db_session):
 
 def test_add_ingredient_to_recipe_failure(db_session):
     recipe_id = 999999999
-    new_ingredient = Create_Ingredient(
+    new_ingredient = CreateIngredient(
         amount=1,
         unit="teaspoon",
         ingredient_name="paprika",
@@ -170,7 +170,7 @@ def test_add_ingredient_to_recipe_failure(db_session):
 def test_edit_ingredient(create_recipe_with_ingredients, db_session):
     ingredient_to_update = create_recipe_with_ingredients
     ingredient_id = ingredient_to_update.ingredients[0].ingredient_id
-    ingredient_update_data = Create_Ingredient(
+    ingredient_update_data = CreateIngredient(
         amount=999,
         unit="lb",
         ingredient_name="paprika",
@@ -188,7 +188,7 @@ def test_edit_ingredient(create_recipe_with_ingredients, db_session):
 
 def test_edit_ingredient_failure(db_session):
     ingredient_id = -1
-    ingredient_update_data = Create_Ingredient(
+    ingredient_update_data = CreateIngredient(
         amount=999,
         unit="lb",
         ingredient_name="paprika",
@@ -203,7 +203,7 @@ def test_edit_ingredient_failure(db_session):
 def test_db_edit_recipe(create_recipe_with_ingredients, db_session):
     recipe_to_update = create_recipe_with_ingredients
     recipe_id = recipe_to_update.recipe_id
-    update_recipe_data = Update_Recipe(
+    update_recipe_data = UpdateRecipe(
         title="Updated title",
         is_vegan=True,
         is_vegetarian=True,
@@ -211,7 +211,7 @@ def test_db_edit_recipe(create_recipe_with_ingredients, db_session):
     )
 
     updated_recipe = db_edit_recipe(update_recipe_data, recipe_id, db_session)
-    assert isinstance(updated_recipe, Return_Recipe)
+    assert isinstance(updated_recipe, ReturnRecipe)
     assert updated_recipe.recipe_id == recipe_id
     assert updated_recipe.title == update_recipe_data.title
     assert updated_recipe.is_vegan == update_recipe_data.is_vegan
@@ -223,7 +223,7 @@ def test_db_edit_recipe(create_recipe_with_ingredients, db_session):
 
 def test_db_edit_recipe_failure(db_session):
     recipe_id = -1
-    update_recipe_data = Update_Recipe(
+    update_recipe_data = UpdateRecipe(
         title="Updated title",
         is_vegan=True,
         is_vegetarian=True,
@@ -249,7 +249,7 @@ def test_get_all_recipies(create_user_fixture, create_user2_fixture, recipe_one,
     assert recipes[0].created_by == user_1["user_id"]
     assert recipes[3].created_by == user_2["user_id"]
     for recipe in recipes:
-        assert isinstance(recipe, Return_Recipe)
+        assert isinstance(recipe, ReturnRecipe)
 
 
 def test_get_users_recipies(create_user_fixture, create_user2_fixture, recipe_one, recipe_two, recipe_three,
@@ -268,10 +268,10 @@ def test_get_users_recipies(create_user_fixture, create_user2_fixture, recipe_on
     assert len(user_1_recipies) == 3
     assert len(user_2_recipies) == 2
     for recipe in user_1_recipies:
-        assert isinstance(recipe, Return_Recipe)
+        assert isinstance(recipe, ReturnRecipe)
 
     for recipe in user_2_recipies:
-        assert isinstance(recipe, Return_Recipe)
+        assert isinstance(recipe, ReturnRecipe)
 
 
 def test_check_if_user_owns_recipe(create_user_fixture, recipe_one, db_session):

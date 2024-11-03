@@ -8,7 +8,7 @@ from tasty_recipe_network.routes.user_auth_routes import oauth2_scheme, get_curr
 from tasty_recipe_network.db.db_connection import get_db
 from tasty_recipe_network.db.db_recipes import db_create_recipe_with_ingredients, db_get_users_recipies, db_get_recipe_with_ingredients, \
     db_get_all_recipies, db_check_if_user_owns_recipe, db_edit_recipe
-from tasty_recipe_network.schemas.recipe_schema import Create_Recipe, Update_Recipe, Return_Recipe
+from tasty_recipe_network.schemas.recipe_schema import CreateRecipe, UpdateRecipe, ReturnRecipe
 
 recipe_router = APIRouter(
     prefix="/recipies",
@@ -23,7 +23,7 @@ recipe_router_no_auth = APIRouter(
 )
 
 
-@recipe_router_no_auth.get("/recipe/{id}", response_model=Return_Recipe)
+@recipe_router_no_auth.get("/recipe/{id}", response_model=ReturnRecipe)
 def get_recipe_by_id(id: int, db: Annotated[Session, Depends(get_db)]):
     try:
         return db_get_recipe_with_ingredients(recipe_id=id, db=db)
@@ -31,12 +31,12 @@ def get_recipe_by_id(id: int, db: Annotated[Session, Depends(get_db)]):
         raise HTTPException(status_code=404, detail="No recipie found")
 
 
-@recipe_router_no_auth.get("/all", response_model=list[Return_Recipe])
+@recipe_router_no_auth.get("/all", response_model=list[ReturnRecipe])
 def get_all_recipies(db: Annotated[Session, Depends(get_db)]):
     return db_get_all_recipies(db=db)
 
 
-@recipe_router.get("/user_recipies", response_model=list[Return_Recipe])
+@recipe_router.get("/user_recipies", response_model=list[ReturnRecipe])
 def get_users_recipies(db: Annotated[Session, Depends(get_db)], token: Annotated[str, Depends(oauth2_scheme)]):
     user_id = get_current_user(token=token, db=db).user_id
     users_recipies = db_get_users_recipies(user_id=user_id, db=db)
@@ -45,8 +45,8 @@ def get_users_recipies(db: Annotated[Session, Depends(get_db)], token: Annotated
     return users_recipies
 
 
-@recipe_router.post("/create_recipe", response_model=Return_Recipe)
-def create_recipe(recipe_data: Create_Recipe, db: Annotated[Session, Depends(get_db)],
+@recipe_router.post("/create_recipe", response_model=ReturnRecipe)
+def create_recipe(recipe_data: CreateRecipe, db: Annotated[Session, Depends(get_db)],
                   token: Annotated[str, Depends(oauth2_scheme)]):
     user_id = get_current_user(token=token, db=db).user_id
     try:
@@ -56,8 +56,8 @@ def create_recipe(recipe_data: Create_Recipe, db: Annotated[Session, Depends(get
     return new_recipe
 
 
-@recipe_router.put("/update_recipe/{recipe_id}", response_model=Return_Recipe)
-def update_recipe(recipe_id: int, recipe_data: Update_Recipe, db: Annotated[Session, Depends(get_db)], token: Annotated[str, Depends(oauth2_scheme)]):
+@recipe_router.put("/update_recipe/{recipe_id}", response_model=ReturnRecipe)
+def update_recipe(recipe_id: int, recipe_data: UpdateRecipe, db: Annotated[Session, Depends(get_db)], token: Annotated[str, Depends(oauth2_scheme)]):
     user_id = get_current_user(token=token, db=db).user_id
 
     try:

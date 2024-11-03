@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from tasty_recipe_network.models.recipe_models import Recipe, Ingredient
-from tasty_recipe_network.schemas.recipe_schema import Create_Recipe, Return_Recipe, Create_Ingredient, Return_Ingredient, Update_Recipe
+from tasty_recipe_network.schemas.recipe_schema import CreateRecipe, ReturnRecipe, CreateIngredient, ReturnIngredient, UpdateRecipe
 
 
 def db_get_recipe(recipe_id: int, db: Session) -> Recipe:
@@ -30,10 +30,10 @@ def db_get_ingredients(recipe_id: int, db: Session) -> Sequence[Ingredient]:
     return found_ingredients
 
 
-def db_get_recipe_with_ingredients(recipe_id: int, db: Session) -> Return_Recipe:
+def db_get_recipe_with_ingredients(recipe_id: int, db: Session) -> ReturnRecipe:
     recipe = db.scalars(select(Recipe).where(Recipe.recipe_id == recipe_id)).one()
-    return_recipe = Return_Recipe(**recipe.to_dict(),
-                                  ingredients=[ingredient.to_dict() for ingredient in recipe.ingredients])
+    return_recipe = ReturnRecipe(**recipe.to_dict(),
+                                 ingredients=[ingredient.to_dict() for ingredient in recipe.ingredients])
     return return_recipe
 
 
@@ -42,7 +42,7 @@ def db_get_recipe_id_from_ingredient_id(ingredient_id: int, db: Session) -> int:
     return found_ingredient.recipe_id
 
 
-def db_edit_recipe(recipe: Update_Recipe, recipe_id: int, db: Session):
+def db_edit_recipe(recipe: UpdateRecipe, recipe_id: int, db: Session):
     recipe_to_update = db.get(Recipe, recipe_id)
     if not recipe_to_update:
         raise sqlalchemy.exc.NoResultFound
@@ -50,10 +50,10 @@ def db_edit_recipe(recipe: Update_Recipe, recipe_id: int, db: Session):
         setattr(recipe_to_update, key, value)
     db.commit()
     ingredients = db_get_ingredients(recipe_id=recipe_id, db=db)
-    return Return_Recipe(**recipe_to_update.to_dict(), ingredients=[Return_Ingredient(**ingredient.to_dict()) for ingredient in ingredients])
+    return ReturnRecipe(**recipe_to_update.to_dict(), ingredients=[ReturnIngredient(**ingredient.to_dict()) for ingredient in ingredients])
 
 
-def db_edit_ingredient(ingredient: Create_Ingredient, ingredient_id: int, db: Session) -> Ingredient:
+def db_edit_ingredient(ingredient: CreateIngredient, ingredient_id: int, db: Session) -> Ingredient:
     ingredient_to_update = db.get(Ingredient, ingredient_id)
     if not ingredient_to_update:
         raise sqlalchemy.exc.NoResultFound
@@ -64,7 +64,7 @@ def db_edit_ingredient(ingredient: Create_Ingredient, ingredient_id: int, db: Se
     return ingredient_to_update
 
 
-def add_ingredient_to_recipe(new_ingredient: Create_Ingredient, recipe_id: int, db: Session) -> Ingredient:
+def add_ingredient_to_recipe(new_ingredient: CreateIngredient, recipe_id: int, db: Session) -> Ingredient:
     ingredient_to_add = Ingredient(**new_ingredient.model_dump(), recipe_id=recipe_id)
     try:
         db.add(ingredient_to_add)
@@ -89,7 +89,7 @@ def delete_recipe(recipe_id: int, db: Session):
     return recipe_to_delete
 
 
-def db_create_recipe(recipe_data: Create_Recipe, user_id: int, db: Session):
+def db_create_recipe(recipe_data: CreateRecipe, user_id: int, db: Session):
     new_recipe = Recipe(**recipe_data.model_dump(exclude={"ingredients"}), created_by=user_id)
     db.add(new_recipe)
     db.commit()
@@ -97,7 +97,7 @@ def db_create_recipe(recipe_data: Create_Recipe, user_id: int, db: Session):
     return new_recipe
 
 
-def db_create_recipe_ingredients(ingredients: list[Create_Ingredient], recipe_id: int, db: Session):
+def db_create_recipe_ingredients(ingredients: list[CreateIngredient], recipe_id: int, db: Session):
     add_ingredients = []
     for ingredient in ingredients:
         new_ingredient = Ingredient(**ingredient.model_dump(), recipe_id=recipe_id)
@@ -109,7 +109,7 @@ def db_create_recipe_ingredients(ingredients: list[Create_Ingredient], recipe_id
     return add_ingredients
 
 
-def db_create_recipe_with_ingredients(recipe_data: Create_Recipe, user_id: int, db: Session):
+def db_create_recipe_with_ingredients(recipe_data: CreateRecipe, user_id: int, db: Session):
     new_recipe = None
     new_ingredients = None
     try:
@@ -124,8 +124,8 @@ def db_create_recipe_with_ingredients(recipe_data: Create_Recipe, user_id: int, 
         db.delete(new_recipe)
         db.commit()
         raise e
-    created_recipe = Return_Recipe(**new_recipe.to_dict(),
-                                   ingredients=[Return_Ingredient(**ingredient.to_dict()) for ingredient in
+    created_recipe = ReturnRecipe(**new_recipe.to_dict(),
+                                  ingredients=[ReturnIngredient(**ingredient.to_dict()) for ingredient in
                                                 new_ingredients])
     return created_recipe
 
@@ -133,16 +133,16 @@ def db_create_recipe_with_ingredients(recipe_data: Create_Recipe, user_id: int, 
 def db_get_users_recipies(user_id: int, db: Session):
     found_recipies = db.scalars(select(Recipe).where(Recipe.created_by == user_id)).all()
     return_recipies = [
-        Return_Recipe(**recipe.to_dict(), ingredients=[ingredient.to_dict() for ingredient in recipe.ingredients]) for
+        ReturnRecipe(**recipe.to_dict(), ingredients=[ingredient.to_dict() for ingredient in recipe.ingredients]) for
         recipe in found_recipies]
 
     return return_recipies
 
 
-def db_get_all_recipies(db: Session) -> list[Return_Recipe]:
+def db_get_all_recipies(db: Session) -> list[ReturnRecipe]:
     found_recipies = db.scalars(select(Recipe)).all()
     return_recipies = [
-        Return_Recipe(**recipe.to_dict(), ingredients=[ingredient.to_dict() for ingredient in recipe.ingredients]) for
+        ReturnRecipe(**recipe.to_dict(), ingredients=[ingredient.to_dict() for ingredient in recipe.ingredients]) for
         recipe in found_recipies]
 
     return return_recipies

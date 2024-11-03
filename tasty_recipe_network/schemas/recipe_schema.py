@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class Create_Ingredient(BaseModel):
+class CreateIngredient(BaseModel):
     ingredient_name: str
     amount: float
     unit: str | None = None
@@ -9,26 +9,31 @@ class Create_Ingredient(BaseModel):
     is_metric: bool = True
 
 
-class Return_Ingredient(Create_Ingredient):
+class ReturnIngredient(CreateIngredient):
     ingredient_id: int
     recipe_id: int
 
 
-class Create_Recipe(BaseModel):
+class CreateRecipe(BaseModel):
     title: str  # add 60 char limit
     is_vegan: bool
     is_vegetarian: bool
     body: str
-    ingredients: list[Create_Ingredient]
+    ingredients: list[CreateIngredient]
 
-class Update_Recipe(BaseModel):
+class ReturnRecipe(BaseModel):
     title: str  # add 60 char limit
     is_vegan: bool
     is_vegetarian: bool
     body: str
-
-
-class Return_Recipe(Create_Recipe):
     recipe_id: int
-    ingredients: list[Return_Ingredient]
+    ingredients: list[ReturnIngredient]
     created_by: int
+
+class UpdateRecipe(BaseModel):
+    title: str  # add 60 char limit
+    is_vegan: bool
+    is_vegetarian: bool
+    body: str
+
+

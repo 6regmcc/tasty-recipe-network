@@ -1,5 +1,5 @@
 from tasty_recipe_network.db.db_recipes import db_create_recipe_with_ingredients
-from tasty_recipe_network.schemas.recipe_schema import Return_Recipe
+from tasty_recipe_network.schemas.recipe_schema import ReturnRecipe
 
 
 def test_create_recipe(test_client, create_user_fixture, authorised_user):
@@ -26,7 +26,7 @@ def test_create_recipe(test_client, create_user_fixture, authorised_user):
     response = test_client.post("/recipies/create_recipe", json=body, headers=headers)
     assert response.status_code == 200
     recipe = response.json()
-    assert Return_Recipe(**recipe)
+    assert ReturnRecipe(**recipe)
     assert recipe["title"] == "test"
     assert len(recipe["ingredients"]) == 1
 
@@ -47,7 +47,7 @@ def test_get_users_recipes(test_client, db_session, authorised_user, recipe_one,
     recipies = response.json()
     assert len(recipies) == 3
     for recipie in recipies:
-        assert Return_Recipe(**recipie)
+        assert ReturnRecipe(**recipie)
 
 
 def test_get_users_recipes_failure(test_client, authorised_user, db_session):
@@ -67,7 +67,7 @@ def test_get_recipe_by_id(test_client, db_session, authorised_user, recipe_one):
     response = test_client.get(f"recipies/recipe/{recipe_id}")
     recipe = response.json()
     assert response.status_code == 200
-    assert Return_Recipe(**recipe)
+    assert ReturnRecipe(**recipe)
     assert recipe_id == recipe["recipe_id"]
 
 
@@ -94,7 +94,7 @@ def test_get_all_recipies(test_client, create_user_fixture, create_user2_fixture
     assert len(recipies) == 5
     recipie_ids = set()
     for recipe in recipies:
-        assert Return_Recipe(**recipe)
+        assert ReturnRecipe(**recipe)
         recipie_ids.add(recipe["recipe_id"])
     assert len(recipie_ids) == 5
     assert recipe1.recipe_id in recipie_ids
