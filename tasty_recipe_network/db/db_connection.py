@@ -10,10 +10,10 @@ from sqlalchemy.orm import declarative_base
 from tasty_recipe_network.config import DEV_DATABASE_URL
 
 DATABASE_URL = ""
-environment = os.getenv('ENVIRONMENT')
+environment = os.environ.get('ENVIRONMENT')
 
 if environment == "production":
-    DATABASE_URL = os.getenv("DATABASE_URL")
+    DATABASE_URL = os.environ.get("DATABASE_URL")
 else:
     DATABASE_URL = DEV_DATABASE_URL
 

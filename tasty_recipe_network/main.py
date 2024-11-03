@@ -1,3 +1,5 @@
+import os
+
 import uvicorn
 from fastapi import FastAPI, Depends
 from contextlib import asynccontextmanager
@@ -14,6 +16,7 @@ from tasty_recipe_network.routes.recipe_routes import recipe_router, recipe_rout
 async def lifespan(app: FastAPI):
     db_create_all()
     print('Creating/Updating db tables')
+    print(f'Current env is {os.environ.get("ENVIRONMENT")}')
     yield
 
 
