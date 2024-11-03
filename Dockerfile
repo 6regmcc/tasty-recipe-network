@@ -25,6 +25,5 @@ COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 
 COPY tasty_recipe_network ./tasty_recipe_network
 
-
-CMD ["fastapi", "run", "tasty_recipe_network/main.py", "--host", "0.0.0.0",  "--port", "8080"]
 EXPOSE 8080
+CMD ["fastapi", "run", "tasty_recipe_network/main.py", "--host", "0.0.0.0",  "--port", "8080"]
