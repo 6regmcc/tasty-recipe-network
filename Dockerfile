@@ -27,4 +27,4 @@ COPY tasty_recipe_network ./tasty_recipe_network
 
 
 CMD ["fastapi", "run", "tasty_recipe_network/main.py", "--port", "80"]
-EXPOSE 3000
+EXPOSE 8080
