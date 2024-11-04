@@ -1,27 +1,15 @@
-# FastAPI_template
 
 
+App deployed at https://tasty-recipe-network.fly.dev/docs
 
-fastapi dev app/main.py
-docker run -dp 127.0.0.1:3000:80 tasty-recipe-network
-http://localhost:3000/docs
+How to run
+Requires Docker
+Download repo
+Create .env file in root with the following values
+    ENVIRONMENT=DEV
+    SECRET_KEY = < openssl rand -hex 32
 
-
-
-to do
-add date modified and date created
-encode user_id in token
-make username unique
-
-
-
-
-create_recipie
-delete_recipie
-edit_recipe
-get_recipe
-
-
-edit_ingredients
-delete_ingredient
-add_ingredient
+Run commands
+    docker compose build
+    docker compose up
+    app available at http://localhost:8080/docs
