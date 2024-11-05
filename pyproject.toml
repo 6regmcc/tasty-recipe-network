@@ -22,7 +22,16 @@ types-passlib = "^1.7.7.20240819"
 ruff = "^0.7.2"
 pre-commit = "^4.0.1"
 pydantic-settings = "^2.6.1"
+pytest-env = "^1.1.5"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+
+[tool.pytest.ini_options]
+env = [
+    "ENVIRONMENT=TEST",
+    "SECRET_KEY=9f6d389daa1829e2a8757d92f7fb6068317b7c2a9a6927357cd314adc2e96a72",
+    "DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost:5456/postgres"
+]
