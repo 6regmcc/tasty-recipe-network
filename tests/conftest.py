@@ -1,31 +1,31 @@
 import pytest
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+
+from sqlalchemy.orm import Session
 from starlette.testclient import TestClient
 
 from tasty_recipe_network.main import app
 from tasty_recipe_network.routes.user_auth_routes import get_password_hash
-from tasty_recipe_network.db.db_connection import Base, get_db
+from tasty_recipe_network.db.db_connection import Base, engine
 from tasty_recipe_network.models.recipe_models import Recipe
 from tasty_recipe_network.models.user_models import User_Auth, User_Details
 from tasty_recipe_network.schemas.recipe_schema import CreateIngredient, CreateRecipe
 from tasty_recipe_network.db.db_recipes import db_create_recipe_with_ingredients
-from tasty_recipe_network.config import ACCESS_TOKEN_EXPIRE_MINUTES, TEST_DATABASE_URL
+from tasty_recipe_network.config import ACCESS_TOKEN_EXPIRE_MINUTES
 
 
 ACCESS_TOKEN_EXPIRE_MINUTES = ACCESS_TOKEN_EXPIRE_MINUTES
-engine = create_engine(TEST_DATABASE_URL)
+# engine = create_engine(TEST_DATABASE_URL)
 
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+# TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-Base.metadata.create_all(bind=engine)
+# Base.metadata.create_all(bind=engine)
 
 
 # Base.metadata.drop_all(bind=engine)
 
 
-@pytest.fixture(scope="function")
+"""@pytest.fixture(scope="function")
 def db_session():
     connection = engine.connect()
     transaction = connection.begin()
@@ -34,17 +34,44 @@ def db_session():
     session.close()
     transaction.rollback()
     connection.close()
+""" """
+
+@pytest.fixture(scope="function")
+def db_session():
+    db: Session = SessionLocal()
+
+    Base.metadata.create_all(bind=engine)
+
+    yield db
+
+    db.rollback()
+    db.close()"""
 
 
 @pytest.fixture(scope="function")
-def test_client(db_session):
-    def override_get_db():
-        try:
-            yield db_session
-        finally:
-            db_session.close()
+def db_engine():
+    Base.metadata.create_all(engine)
+    yield engine
+    Base.metadata.drop_all(engine)
 
-    app.dependency_overrides[get_db] = override_get_db
+
+@pytest.fixture(scope="function")
+def db_session(db_engine):
+    session: Session = Session(db_engine)
+    Base.metadata.create_all(bind=engine)
+    yield session
+    session.close()
+
+
+@pytest.fixture(scope="function")
+def test_client():
+    """def override_get_db():
+        try:
+            yield db
+        finally:
+            db.close()
+
+    app.dependency_overrides[get_db] = override_get_db"""
 
     with TestClient(app) as test_client:
         yield test_client

@@ -4,10 +4,8 @@ from typing import Generator
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker, DeclarativeBase
 
-from tasty_recipe_network.config import DEV_DATABASE_URL
 
-
-def get_environment() -> str:
+"""def get_environment() -> str:
     environment = os.environ.get("ENVIRONMENT")
     if environment is None:
         raise ValueError("ENVIRONMENT environment variable not set")
@@ -25,10 +23,10 @@ def get_db_url() -> str:
 
 CURR_DATABASE_URL = (
     get_db_url() if get_environment() == "production" else DEV_DATABASE_URL
-)
+)"""
 
 
-engine = create_engine(CURR_DATABASE_URL)
+engine = create_engine(os.getenv("DATABASE_URL"))
 SessionLocal = sessionmaker(autoflush=False, autocommit=False, bind=engine)
 
 

@@ -16,7 +16,7 @@ class Recipe(Base):
     title: Mapped[str] = mapped_column(String(60))
     created_by: Mapped[int] = mapped_column(ForeignKey("user_auth.user_id"))
     is_vegan: Mapped[bool] = mapped_column(default=False)
-    is_vegetarian: Mapped[str] = mapped_column(default=False)
+    is_vegetarian: Mapped[bool] = mapped_column(default=False)
     body: Mapped[str] = mapped_column(String(2000))
     ingredients = relationship("Ingredient", backref="recipe")
 
