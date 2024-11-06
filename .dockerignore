@@ -121,7 +121,7 @@
 **/*.sage.py
 
 # Environments
-**/.env
+tests/test.env
 **/.venv
 **/env
 **/venv
